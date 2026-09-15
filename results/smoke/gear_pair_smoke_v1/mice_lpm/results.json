@@ -1,0 +1,50 @@
+{
+  "evidence_status": "deformable involute tooth-pair scientific smoke; not full transient evidence",
+  "method": "MICE-LPM",
+  "seed": 42,
+  "selection_rule": "minimize validation relative_l2 + 2 * hotspot_mae subject to equilibrium <= 94",
+  "equilibrium_budget": 94.0,
+  "contact_weight": 8.0,
+  "hotspot_weight": 2.0,
+  "split_samples": {
+    "train": 12,
+    "validation": 3,
+    "test": 6
+  },
+  "target_scale_mpa_or_native": 1349.531982421875,
+  "grid_spacing_mm": {
+    "dx": 0.1111111111111111,
+    "dy": 0.10634920634920635
+  },
+  "validation": {
+    "relative_l2": 0.5778817534446716,
+    "hotspot_mae": 0.06448923796415329,
+    "equilibrium_residual": 93.99657440185547,
+    "repair_fraction_mean": 0.528564453125,
+    "repair_fraction_min": 0.4918060302734375,
+    "repair_fraction_max": 0.5705108642578125,
+    "repair_fractions": [
+      0.5705108642578125,
+      0.52337646484375,
+      0.4918060302734375
+    ],
+    "wall_seconds": 0.0839708999847062
+  },
+  "test": {
+    "relative_l2": 0.6394439935684204,
+    "hotspot_mae": 0.049730755388736725,
+    "equilibrium_residual": 93.9978256225586,
+    "repair_fraction_mean": 0.515960693359375,
+    "repair_fraction_min": 0.452423095703125,
+    "repair_fraction_max": 0.5772247314453125,
+    "repair_fractions": [
+      0.49951171875,
+      0.5312957763671875,
+      0.5772247314453125,
+      0.537933349609375,
+      0.49737548828125,
+      0.452423095703125
+    ],
+    "wall_seconds": 0.14272580004762858
+  }
+}

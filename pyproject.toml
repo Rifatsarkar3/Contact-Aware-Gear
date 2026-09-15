@@ -1,0 +1,22 @@
+[project]
+name = "gearstress"
+version = "0.1.0"
+description = "Leakage-controlled neural-operator pipeline for transient gear-tooth stress fields"
+requires-python = ">=3.11"
+dependencies = [
+  "gmsh==4.15.2",
+  "h5py>=3.10",
+  "matplotlib>=3.8",
+  "meshio>=5.3",
+  "numpy>=1.26",
+  "PyYAML>=6.0",
+  "scipy>=1.12",
+  "torch>=2.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

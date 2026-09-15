@@ -1,0 +1,2428 @@
+{
+  "evidence_status": "phase-dense quasi-static mating-tooth extension with real time/speed labels; not mesh/time-step-qualified final transient evidence; real-inertia *DYNAMIC solve did not converge, see docs/TRANSIENT_FEM_SMOKE_2026-07-16.md",
+  "model": "lpm_rcr_fno",
+  "seed": 2,
+  "split_seed": 42,
+  "epochs": 300,
+  "physics_warmup_epochs": 0,
+  "learning_rate": 0.001,
+  "split_samples": {
+    "train": 36,
+    "val": 9,
+    "test": 18
+  },
+  "target_scale_mpa_or_native": 1601.829833984375,
+  "grid_spacing_mm": {
+    "dx": 0.1111111111111111,
+    "dy": 0.10634920634920635
+  },
+  "best_val_relative_l2": 0.49696634544266594,
+  "test": {
+    "relative_l2": 0.49484091997146606,
+    "hotspot_mae": 0.04335915959543652,
+    "equilibrium_residual": 125.14372422960069
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.5707722802956899,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5123317771487765,
+      "val_hotspot_mae": 0.04849458651410209,
+      "val_equilibrium_residual": 143.35657501220703
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.5603402521875169,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5100916922092438,
+      "val_hotspot_mae": 0.04848963022232056,
+      "val_equilibrium_residual": 143.42166900634766
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.557566785150104,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5083439449469248,
+      "val_hotspot_mae": 0.048469696607854634,
+      "val_equilibrium_residual": 142.7408913506402
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.5558636850780911,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5075829327106476,
+      "val_hotspot_mae": 0.04853682882255978,
+      "val_equilibrium_residual": 144.72052341037326
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.5539787775940366,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5074888832039304,
+      "val_hotspot_mae": 0.04853188991546631,
+      "val_equilibrium_residual": 144.57999165852866
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.553929027583864,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5077503952715132,
+      "val_hotspot_mae": 0.04854658411608802,
+      "val_equilibrium_residual": 144.89447106255426
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.5574035346508026,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5071187648508284,
+      "val_hotspot_mae": 0.04852675646543503,
+      "val_equilibrium_residual": 144.4618894788954
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.5588518248664008,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5368690523836348,
+      "val_hotspot_mae": 0.048297761215104,
+      "val_equilibrium_residual": 134.13465542263455
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.5975029004944695,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5542190108034346,
+      "val_hotspot_mae": 0.04892994794580671,
+      "val_equilibrium_residual": 145.4867663913303
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.5845897959338294,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5634977254602644,
+      "val_hotspot_mae": 0.0482321216000451,
+      "val_equilibrium_residual": 130.04273986816406
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.6415185564094119,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5345076156987084,
+      "val_hotspot_mae": 0.048490896821022034,
+      "val_equilibrium_residual": 143.01917690700955
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.5747569269604154,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5164014200369517,
+      "val_hotspot_mae": 0.048612414134873286,
+      "val_equilibrium_residual": 145.95345560709634
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.5651667813460032,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5141146580378214,
+      "val_hotspot_mae": 0.04842502044306861,
+      "val_equilibrium_residual": 140.87186431884766
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.5665850838025411,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5219877726501889,
+      "val_hotspot_mae": 0.048697978258132935,
+      "val_equilibrium_residual": 146.89052242702908
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.559974749883016,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5129468970828586,
+      "val_hotspot_mae": 0.0483972719973988,
+      "val_equilibrium_residual": 139.86541578504773
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.5596222314569685,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5136580765247345,
+      "val_hotspot_mae": 0.048611404167281255,
+      "val_equilibrium_residual": 146.11927795410156
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.5580594109164344,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5076987478468153,
+      "val_hotspot_mae": 0.048443386124240026,
+      "val_equilibrium_residual": 142.01964823404947
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.5552846458223131,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5079435010751089,
+      "val_hotspot_mae": 0.04854913138680988,
+      "val_equilibrium_residual": 145.0167761908637
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.5538879997200437,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5082603461212583,
+      "val_hotspot_mae": 0.04843796624077691,
+      "val_equilibrium_residual": 141.7341774834527
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.5597390962971581,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.510171526008182,
+      "val_hotspot_mae": 0.048578490813573204,
+      "val_equilibrium_residual": 145.69469367133246
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.5554267035590278,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5072339872519175,
+      "val_hotspot_mae": 0.048451358245478734,
+      "val_equilibrium_residual": 142.34454600016275
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.553638756275177,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5069113969802856,
+      "val_hotspot_mae": 0.04851611620850033,
+      "val_equilibrium_residual": 144.4295408460829
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.5532616045739915,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5064176155461205,
+      "val_hotspot_mae": 0.048488746086756386,
+      "val_equilibrium_residual": 143.7115275065104
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.5530270834763845,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.506515277756585,
+      "val_hotspot_mae": 0.04849576453367869,
+      "val_equilibrium_residual": 143.98201921251086
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.5529733598232269,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063931147257487,
+      "val_hotspot_mae": 0.048483164774047,
+      "val_equilibrium_residual": 143.68958197699652
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.552983883354399,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.506627039776908,
+      "val_hotspot_mae": 0.04849578605757819,
+      "val_equilibrium_residual": 144.12087927924262
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.5529733498891195,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063852634694841,
+      "val_hotspot_mae": 0.04847790135277642,
+      "val_equilibrium_residual": 143.6913079155816
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.5529337260458205,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063590771622128,
+      "val_hotspot_mae": 0.04847178111473719,
+      "val_equilibrium_residual": 143.5878380669488
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.5529356267717149,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5065198739369711,
+      "val_hotspot_mae": 0.048480218483342066,
+      "val_equilibrium_residual": 143.9176457722982
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.5528445177608066,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063550108008914,
+      "val_hotspot_mae": 0.04846831907828649,
+      "val_equilibrium_residual": 143.6614752875434
+    },
+    {
+      "epoch": 31,
+      "train_loss": 0.5528456701172723,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5066578520668877,
+      "val_hotspot_mae": 0.048482143216662936,
+      "val_equilibrium_residual": 144.0852288140191
+    },
+    {
+      "epoch": 32,
+      "train_loss": 0.5529749459690518,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5062781009409163,
+      "val_hotspot_mae": 0.048444164295991264,
+      "val_equilibrium_residual": 143.1326658460829
+    },
+    {
+      "epoch": 33,
+      "train_loss": 0.5529881914456686,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5065402686595917,
+      "val_hotspot_mae": 0.048464959694279566,
+      "val_equilibrium_residual": 143.8668696085612
+    },
+    {
+      "epoch": 34,
+      "train_loss": 0.5531227356857724,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5062177115016513,
+      "val_hotspot_mae": 0.04844997409317228,
+      "val_equilibrium_residual": 143.47249518500433
+    },
+    {
+      "epoch": 35,
+      "train_loss": 0.5528655880027347,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5062164200676812,
+      "val_hotspot_mae": 0.04842401544253031,
+      "val_equilibrium_residual": 142.82766893174914
+    },
+    {
+      "epoch": 36,
+      "train_loss": 0.5534336235788133,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5080467098289065,
+      "val_hotspot_mae": 0.04849152515331904,
+      "val_equilibrium_residual": 144.72441016303168
+    },
+    {
+      "epoch": 37,
+      "train_loss": 0.5536126527521346,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5061339139938354,
+      "val_hotspot_mae": 0.048419939974943794,
+      "val_equilibrium_residual": 142.99465688069662
+    },
+    {
+      "epoch": 38,
+      "train_loss": 0.5528561969598135,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5067317055331336,
+      "val_hotspot_mae": 0.048450257215234965,
+      "val_equilibrium_residual": 143.98379855685764
+    },
+    {
+      "epoch": 39,
+      "train_loss": 0.5529441899723477,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.506076498164071,
+      "val_hotspot_mae": 0.04839497059583664,
+      "val_equilibrium_residual": 142.79005686442056
+    },
+    {
+      "epoch": 40,
+      "train_loss": 0.5526881714661916,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5060487753815122,
+      "val_hotspot_mae": 0.04839161617888345,
+      "val_equilibrium_residual": 142.9882583618164
+    },
+    {
+      "epoch": 41,
+      "train_loss": 0.5526256759961446,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5064497424496545,
+      "val_hotspot_mae": 0.048407945368025035,
+      "val_equilibrium_residual": 143.65323554144965
+    },
+    {
+      "epoch": 42,
+      "train_loss": 0.5528416335582733,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5060044825077057,
+      "val_hotspot_mae": 0.04836929589509964,
+      "val_equilibrium_residual": 142.9883804321289
+    },
+    {
+      "epoch": 43,
+      "train_loss": 0.5526642368899451,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5059979061285654,
+      "val_hotspot_mae": 0.048330779704782695,
+      "val_equilibrium_residual": 142.36174943712024
+    },
+    {
+      "epoch": 44,
+      "train_loss": 0.5527568691306644,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5058541231685214,
+      "val_hotspot_mae": 0.04831004391113917,
+      "val_equilibrium_residual": 142.53458319769965
+    },
+    {
+      "epoch": 45,
+      "train_loss": 0.5534449252817366,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063591069645352,
+      "val_hotspot_mae": 0.048317060702376895,
+      "val_equilibrium_residual": 143.24248504638672
+    },
+    {
+      "epoch": 46,
+      "train_loss": 0.5528601871596442,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.509029746055603,
+      "val_hotspot_mae": 0.04834176765547858,
+      "val_equilibrium_residual": 144.11673821343317
+    },
+    {
+      "epoch": 47,
+      "train_loss": 0.5533854961395264,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5060005088647207,
+      "val_hotspot_mae": 0.04825565798415078,
+      "val_equilibrium_residual": 142.71078236897787
+    },
+    {
+      "epoch": 48,
+      "train_loss": 0.5522375967767503,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5057974523968167,
+      "val_hotspot_mae": 0.04820720520284441,
+      "val_equilibrium_residual": 142.4286405775282
+    },
+    {
+      "epoch": 49,
+      "train_loss": 0.5520901812447442,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5057467023531595,
+      "val_hotspot_mae": 0.04811718646023008,
+      "val_equilibrium_residual": 141.9761505126953
+    },
+    {
+      "epoch": 50,
+      "train_loss": 0.55197916759385,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5055971476766798,
+      "val_hotspot_mae": 0.048041673170195684,
+      "val_equilibrium_residual": 141.2019297281901
+    },
+    {
+      "epoch": 51,
+      "train_loss": 0.5520773960484399,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5057903362645043,
+      "val_hotspot_mae": 0.04800748493936327,
+      "val_equilibrium_residual": 141.74786885579428
+    },
+    {
+      "epoch": 52,
+      "train_loss": 0.5523536304632822,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5055735641055636,
+      "val_hotspot_mae": 0.047871101233694285,
+      "val_equilibrium_residual": 140.24803585476346
+    },
+    {
+      "epoch": 53,
+      "train_loss": 0.5557725694444444,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5075910025172763,
+      "val_hotspot_mae": 0.04811036835114161,
+      "val_equilibrium_residual": 142.70021650526257
+    },
+    {
+      "epoch": 54,
+      "train_loss": 0.5534664988517761,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063125358687507,
+      "val_hotspot_mae": 0.04811870555082957,
+      "val_equilibrium_residual": 142.8257336086697
+    },
+    {
+      "epoch": 55,
+      "train_loss": 0.5545504722330306,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5052600238058302,
+      "val_hotspot_mae": 0.047924700710508555,
+      "val_equilibrium_residual": 141.1790296766493
+    },
+    {
+      "epoch": 56,
+      "train_loss": 0.5540554258558485,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5051930877897475,
+      "val_hotspot_mae": 0.04769585861100091,
+      "val_equilibrium_residual": 139.3954060872396
+    },
+    {
+      "epoch": 57,
+      "train_loss": 0.5534260604116652,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5057379702727,
+      "val_hotspot_mae": 0.047660609086354576,
+      "val_equilibrium_residual": 139.03589714898004
+    },
+    {
+      "epoch": 58,
+      "train_loss": 0.553602914015452,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5055211186408997,
+      "val_hotspot_mae": 0.04748713473478953,
+      "val_equilibrium_residual": 139.97652689615884
+    },
+    {
+      "epoch": 59,
+      "train_loss": 0.5514966679943932,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.505493058098687,
+      "val_hotspot_mae": 0.04741162144475513,
+      "val_equilibrium_residual": 139.66302575005426
+    },
+    {
+      "epoch": 60,
+      "train_loss": 0.552658392323388,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5056948562463125,
+      "val_hotspot_mae": 0.0473579830593533,
+      "val_equilibrium_residual": 137.7167002360026
+    },
+    {
+      "epoch": 61,
+      "train_loss": 0.5550444953971438,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5046852694617378,
+      "val_hotspot_mae": 0.04733374300930235,
+      "val_equilibrium_residual": 138.51087358262805
+    },
+    {
+      "epoch": 62,
+      "train_loss": 0.5557420386208428,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5101026528411441,
+      "val_hotspot_mae": 0.04742669976419873,
+      "val_equilibrium_residual": 141.2139655219184
+    },
+    {
+      "epoch": 63,
+      "train_loss": 0.5536730355686612,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5046770672003428,
+      "val_hotspot_mae": 0.04722363253434499,
+      "val_equilibrium_residual": 138.17137061225043
+    },
+    {
+      "epoch": 64,
+      "train_loss": 0.550895611445109,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5045823951562246,
+      "val_hotspot_mae": 0.047166826824347176,
+      "val_equilibrium_residual": 138.5183622572157
+    },
+    {
+      "epoch": 65,
+      "train_loss": 0.5524676442146301,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5072666274176704,
+      "val_hotspot_mae": 0.04720424860715866,
+      "val_equilibrium_residual": 140.02459547254773
+    },
+    {
+      "epoch": 66,
+      "train_loss": 0.5521489911609225,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5087919930617014,
+      "val_hotspot_mae": 0.047245965235763125,
+      "val_equilibrium_residual": 140.6306355794271
+    },
+    {
+      "epoch": 67,
+      "train_loss": 0.5598187810844846,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.508745809396108,
+      "val_hotspot_mae": 0.04723175366719564,
+      "val_equilibrium_residual": 136.46524217393664
+    },
+    {
+      "epoch": 68,
+      "train_loss": 0.5569509598943923,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5076792372597588,
+      "val_hotspot_mae": 0.046582098636362285,
+      "val_equilibrium_residual": 138.01937950981988
+    },
+    {
+      "epoch": 69,
+      "train_loss": 0.5509215792020162,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5042488939232297,
+      "val_hotspot_mae": 0.04687742723359002,
+      "val_equilibrium_residual": 137.922604031033
+    },
+    {
+      "epoch": 70,
+      "train_loss": 0.5503558119138082,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5046093596352471,
+      "val_hotspot_mae": 0.04725755751132965,
+      "val_equilibrium_residual": 139.8105239868164
+    },
+    {
+      "epoch": 71,
+      "train_loss": 0.5500703354676565,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5041046804851956,
+      "val_hotspot_mae": 0.046489967240227595,
+      "val_equilibrium_residual": 136.76686774359808
+    },
+    {
+      "epoch": 72,
+      "train_loss": 0.5497562653488584,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5040046705140008,
+      "val_hotspot_mae": 0.046366695728566915,
+      "val_equilibrium_residual": 136.20194413926868
+    },
+    {
+      "epoch": 73,
+      "train_loss": 0.549934082561069,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5046676629119449,
+      "val_hotspot_mae": 0.046478944520155586,
+      "val_equilibrium_residual": 137.31236521402994
+    },
+    {
+      "epoch": 74,
+      "train_loss": 0.5500024656454722,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5038780238893297,
+      "val_hotspot_mae": 0.046621465848551855,
+      "val_equilibrium_residual": 137.62216271294488
+    },
+    {
+      "epoch": 75,
+      "train_loss": 0.5496229297584958,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5040031042363908,
+      "val_hotspot_mae": 0.046545012957519956,
+      "val_equilibrium_residual": 137.361935933431
+    },
+    {
+      "epoch": 76,
+      "train_loss": 0.5495004256566366,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5038712422053019,
+      "val_hotspot_mae": 0.04626867175102234,
+      "val_equilibrium_residual": 136.31397501627603
+    },
+    {
+      "epoch": 77,
+      "train_loss": 0.549372007449468,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5037518044312795,
+      "val_hotspot_mae": 0.04620470851659775,
+      "val_equilibrium_residual": 136.22117445203992
+    },
+    {
+      "epoch": 78,
+      "train_loss": 0.5491521391603682,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5036952959166633,
+      "val_hotspot_mae": 0.046391450696521334,
+      "val_equilibrium_residual": 136.838262769911
+    },
+    {
+      "epoch": 79,
+      "train_loss": 0.5493496921327379,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5039019783337911,
+      "val_hotspot_mae": 0.04599550780322817,
+      "val_equilibrium_residual": 135.93500094943576
+    },
+    {
+      "epoch": 80,
+      "train_loss": 0.5492723418606652,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5039292474587759,
+      "val_hotspot_mae": 0.046204431189431086,
+      "val_equilibrium_residual": 136.79367065429688
+    },
+    {
+      "epoch": 81,
+      "train_loss": 0.5495111048221588,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.504182904958725,
+      "val_hotspot_mae": 0.046129813624752894,
+      "val_equilibrium_residual": 135.03469848632812
+    },
+    {
+      "epoch": 82,
+      "train_loss": 0.550118797355228,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.505351679192649,
+      "val_hotspot_mae": 0.045753232306904264,
+      "val_equilibrium_residual": 135.77884334988065
+    },
+    {
+      "epoch": 83,
+      "train_loss": 0.5514718227916293,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5038686626487308,
+      "val_hotspot_mae": 0.046395408610502877,
+      "val_equilibrium_residual": 137.74986012776694
+    },
+    {
+      "epoch": 84,
+      "train_loss": 0.5514259371492598,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5048897233274248,
+      "val_hotspot_mae": 0.04580281343724993,
+      "val_equilibrium_residual": 133.67437065972223
+    },
+    {
+      "epoch": 85,
+      "train_loss": 0.5497768355740441,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5036656988991631,
+      "val_hotspot_mae": 0.04582856595516205,
+      "val_equilibrium_residual": 134.5665986802843
+    },
+    {
+      "epoch": 86,
+      "train_loss": 0.5502332813209958,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5147004789776273,
+      "val_hotspot_mae": 0.04607123053736157,
+      "val_equilibrium_residual": 138.33212110731336
+    },
+    {
+      "epoch": 87,
+      "train_loss": 0.5531683795981936,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.503251764509413,
+      "val_hotspot_mae": 0.0458020129137569,
+      "val_equilibrium_residual": 134.65311855740018
+    },
+    {
+      "epoch": 88,
+      "train_loss": 0.5515696108341217,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5053260922431946,
+      "val_hotspot_mae": 0.04577993353207906,
+      "val_equilibrium_residual": 136.34926266140408
+    },
+    {
+      "epoch": 89,
+      "train_loss": 0.5491245554553138,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5032402276992798,
+      "val_hotspot_mae": 0.045893796616130404,
+      "val_equilibrium_residual": 135.8381830851237
+    },
+    {
+      "epoch": 90,
+      "train_loss": 0.5481745004653931,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.503132787015703,
+      "val_hotspot_mae": 0.04571502241823408,
+      "val_equilibrium_residual": 134.69843122694226
+    },
+    {
+      "epoch": 91,
+      "train_loss": 0.5487739311324226,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5040318436092801,
+      "val_hotspot_mae": 0.04560150454441706,
+      "val_equilibrium_residual": 135.6856943766276
+    },
+    {
+      "epoch": 92,
+      "train_loss": 0.5513531366984049,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5030564202202691,
+      "val_hotspot_mae": 0.04598825673262278,
+      "val_equilibrium_residual": 136.61034308539496
+    },
+    {
+      "epoch": 93,
+      "train_loss": 0.5512916743755341,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.503545257780287,
+      "val_hotspot_mae": 0.045416431294547185,
+      "val_equilibrium_residual": 134.29007297092014
+    },
+    {
+      "epoch": 94,
+      "train_loss": 0.5512433151404063,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.505108912785848,
+      "val_hotspot_mae": 0.046114513443575963,
+      "val_equilibrium_residual": 137.261839972602
+    },
+    {
+      "epoch": 95,
+      "train_loss": 0.5494622157679664,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5049796435568068,
+      "val_hotspot_mae": 0.04597816699080997,
+      "val_equilibrium_residual": 134.03255038791232
+    },
+    {
+      "epoch": 96,
+      "train_loss": 0.5507642229398092,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5037073956595527,
+      "val_hotspot_mae": 0.04579179733991623,
+      "val_equilibrium_residual": 136.16710578070746
+    },
+    {
+      "epoch": 97,
+      "train_loss": 0.5489660700162252,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5049190587467618,
+      "val_hotspot_mae": 0.04581882142358356,
+      "val_equilibrium_residual": 136.8205083211263
+    },
+    {
+      "epoch": 98,
+      "train_loss": 0.5484134985340966,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5027819275856018,
+      "val_hotspot_mae": 0.04533276127444373,
+      "val_equilibrium_residual": 134.2237074110243
+    },
+    {
+      "epoch": 99,
+      "train_loss": 0.5477513604693942,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5028389990329742,
+      "val_hotspot_mae": 0.04557383060455322,
+      "val_equilibrium_residual": 135.1831775241428
+    },
+    {
+      "epoch": 100,
+      "train_loss": 0.5500204165776571,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5032596124543084,
+      "val_hotspot_mae": 0.0454858715335528,
+      "val_equilibrium_residual": 135.51480526394315
+    },
+    {
+      "epoch": 101,
+      "train_loss": 0.5545678171846602,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5079957246780396,
+      "val_hotspot_mae": 0.04566527240806156,
+      "val_equilibrium_residual": 137.34399922688803
+    },
+    {
+      "epoch": 102,
+      "train_loss": 0.5503722661071353,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5025980903042687,
+      "val_hotspot_mae": 0.044859275221824646,
+      "val_equilibrium_residual": 132.54316202799478
+    },
+    {
+      "epoch": 103,
+      "train_loss": 0.547466817829344,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5024282799826728,
+      "val_hotspot_mae": 0.04547525859541363,
+      "val_equilibrium_residual": 135.18931155734592
+    },
+    {
+      "epoch": 104,
+      "train_loss": 0.5470529132419162,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5023108985688951,
+      "val_hotspot_mae": 0.04516207840707567,
+      "val_equilibrium_residual": 134.0696495903863
+    },
+    {
+      "epoch": 105,
+      "train_loss": 0.5470131635665894,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5023176438278623,
+      "val_hotspot_mae": 0.04517626100116306,
+      "val_equilibrium_residual": 134.0547358194987
+    },
+    {
+      "epoch": 106,
+      "train_loss": 0.5469869275887808,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.502552353673511,
+      "val_hotspot_mae": 0.04528412802351846,
+      "val_equilibrium_residual": 134.9411595662435
+    },
+    {
+      "epoch": 107,
+      "train_loss": 0.5469472342067294,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5022386345598433,
+      "val_hotspot_mae": 0.044650126662519246,
+      "val_equilibrium_residual": 132.68490939670139
+    },
+    {
+      "epoch": 108,
+      "train_loss": 0.546628495057424,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5024625592761569,
+      "val_hotspot_mae": 0.045581046077940196,
+      "val_equilibrium_residual": 135.78306749131946
+    },
+    {
+      "epoch": 109,
+      "train_loss": 0.5467186735735999,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5021741622024112,
+      "val_hotspot_mae": 0.04497851679722468,
+      "val_equilibrium_residual": 133.26251814100476
+    },
+    {
+      "epoch": 110,
+      "train_loss": 0.5465130375491248,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5019508434666528,
+      "val_hotspot_mae": 0.044861542681852974,
+      "val_equilibrium_residual": 133.24178229437933
+    },
+    {
+      "epoch": 111,
+      "train_loss": 0.5480194456047482,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5021383298767937,
+      "val_hotspot_mae": 0.045098466177781425,
+      "val_equilibrium_residual": 134.43264685736762
+    },
+    {
+      "epoch": 112,
+      "train_loss": 0.5496654013792673,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5042594141430325,
+      "val_hotspot_mae": 0.04477309021684858,
+      "val_equilibrium_residual": 130.7828165690104
+    },
+    {
+      "epoch": 113,
+      "train_loss": 0.5496029787593417,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.501859231127633,
+      "val_hotspot_mae": 0.04523725310961405,
+      "val_equilibrium_residual": 133.9348136054145
+    },
+    {
+      "epoch": 114,
+      "train_loss": 0.5478291544649336,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5020402703020308,
+      "val_hotspot_mae": 0.044730150865183935,
+      "val_equilibrium_residual": 133.22557576497397
+    },
+    {
+      "epoch": 115,
+      "train_loss": 0.547548191414939,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5048145287566714,
+      "val_hotspot_mae": 0.045528269476360746,
+      "val_equilibrium_residual": 137.0413097805447
+    },
+    {
+      "epoch": 116,
+      "train_loss": 0.5497309631771512,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5034933884938558,
+      "val_hotspot_mae": 0.04462582038508521,
+      "val_equilibrium_residual": 130.56254069010416
+    },
+    {
+      "epoch": 117,
+      "train_loss": 0.5501981609397464,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5044014089637332,
+      "val_hotspot_mae": 0.04507396535740958,
+      "val_equilibrium_residual": 131.78079986572266
+    },
+    {
+      "epoch": 118,
+      "train_loss": 0.5503473745452033,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5026801625887553,
+      "val_hotspot_mae": 0.04442767509155803,
+      "val_equilibrium_residual": 132.71080695258246
+    },
+    {
+      "epoch": 119,
+      "train_loss": 0.5481205549505022,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5017109546396468,
+      "val_hotspot_mae": 0.045184637937280864,
+      "val_equilibrium_residual": 134.6744147406684
+    },
+    {
+      "epoch": 120,
+      "train_loss": 0.546098980638716,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5020963682068719,
+      "val_hotspot_mae": 0.04452320022715463,
+      "val_equilibrium_residual": 131.09154256184897
+    },
+    {
+      "epoch": 121,
+      "train_loss": 0.5532340440485213,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5022114680873023,
+      "val_hotspot_mae": 0.044890283710426755,
+      "val_equilibrium_residual": 132.4106419881185
+    },
+    {
+      "epoch": 122,
+      "train_loss": 0.5614181955655416,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5178085962931315,
+      "val_hotspot_mae": 0.04529095358318753,
+      "val_equilibrium_residual": 137.3145226372613
+    },
+    {
+      "epoch": 123,
+      "train_loss": 0.5625701877805922,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5053293506304423,
+      "val_hotspot_mae": 0.04476995269457499,
+      "val_equilibrium_residual": 130.39026641845703
+    },
+    {
+      "epoch": 124,
+      "train_loss": 0.5514736341105567,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5050820410251617,
+      "val_hotspot_mae": 0.04498282406065199,
+      "val_equilibrium_residual": 131.6625044080946
+    },
+    {
+      "epoch": 125,
+      "train_loss": 0.5495819449424744,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5025764339500003,
+      "val_hotspot_mae": 0.0444346744981077,
+      "val_equilibrium_residual": 132.97727288140192
+    },
+    {
+      "epoch": 126,
+      "train_loss": 0.5461791124608781,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011224680476718,
+      "val_hotspot_mae": 0.04497078723377652,
+      "val_equilibrium_residual": 134.1579157511393
+    },
+    {
+      "epoch": 127,
+      "train_loss": 0.5459479987621307,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.50120700067944,
+      "val_hotspot_mae": 0.04454067018296984,
+      "val_equilibrium_residual": 132.3271950615777
+    },
+    {
+      "epoch": 128,
+      "train_loss": 0.5455478330453237,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5015433894263374,
+      "val_hotspot_mae": 0.04500164257155524,
+      "val_equilibrium_residual": 134.69833034939236
+    },
+    {
+      "epoch": 129,
+      "train_loss": 0.5452620221508874,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5012112127410041,
+      "val_hotspot_mae": 0.04443123150202963,
+      "val_equilibrium_residual": 132.21116807725696
+    },
+    {
+      "epoch": 130,
+      "train_loss": 0.5452117191420661,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5009817745950487,
+      "val_hotspot_mae": 0.04459297408660253,
+      "val_equilibrium_residual": 132.9005364312066
+    },
+    {
+      "epoch": 131,
+      "train_loss": 0.545455104774899,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011517604192098,
+      "val_hotspot_mae": 0.044907367063893214,
+      "val_equilibrium_residual": 134.20155419243707
+    },
+    {
+      "epoch": 132,
+      "train_loss": 0.5452084607548184,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5009351041581895,
+      "val_hotspot_mae": 0.044954482879903584,
+      "val_equilibrium_residual": 133.9605467054579
+    },
+    {
+      "epoch": 133,
+      "train_loss": 0.5453784002198113,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011700391769409,
+      "val_hotspot_mae": 0.04472677575217353,
+      "val_equilibrium_residual": 133.5054143269857
+    },
+    {
+      "epoch": 134,
+      "train_loss": 0.5451759099960327,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5010584990183512,
+      "val_hotspot_mae": 0.04482778741253747,
+      "val_equilibrium_residual": 133.85677507188586
+    },
+    {
+      "epoch": 135,
+      "train_loss": 0.5449063777923584,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5010593367947472,
+      "val_hotspot_mae": 0.04467164725065231,
+      "val_equilibrium_residual": 132.7068337334527
+    },
+    {
+      "epoch": 136,
+      "train_loss": 0.5450410213735368,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008234745926328,
+      "val_hotspot_mae": 0.04455018788576126,
+      "val_equilibrium_residual": 132.65382046169705
+    },
+    {
+      "epoch": 137,
+      "train_loss": 0.5447893341382345,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5023850335015191,
+      "val_hotspot_mae": 0.04463969584968355,
+      "val_equilibrium_residual": 134.122191535102
+    },
+    {
+      "epoch": 138,
+      "train_loss": 0.5461378892262777,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008058845996857,
+      "val_hotspot_mae": 0.04483889208899604,
+      "val_equilibrium_residual": 133.00753784179688
+    },
+    {
+      "epoch": 139,
+      "train_loss": 0.5450518561734093,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5005668732855055,
+      "val_hotspot_mae": 0.04454217106103897,
+      "val_equilibrium_residual": 132.72738223605685
+    },
+    {
+      "epoch": 140,
+      "train_loss": 0.5447965231206682,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008047819137573,
+      "val_hotspot_mae": 0.04479521595769458,
+      "val_equilibrium_residual": 133.91289520263672
+    },
+    {
+      "epoch": 141,
+      "train_loss": 0.544893181986279,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5005279978116354,
+      "val_hotspot_mae": 0.04445521906018257,
+      "val_equilibrium_residual": 132.77086978488498
+    },
+    {
+      "epoch": 142,
+      "train_loss": 0.5455147193537818,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011187626255883,
+      "val_hotspot_mae": 0.045038961701922946,
+      "val_equilibrium_residual": 134.575072394477
+    },
+    {
+      "epoch": 143,
+      "train_loss": 0.5445286167992486,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5003103117148081,
+      "val_hotspot_mae": 0.04399906968077024,
+      "val_equilibrium_residual": 130.267211066352
+    },
+    {
+      "epoch": 144,
+      "train_loss": 0.5451930993133121,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5005370477835337,
+      "val_hotspot_mae": 0.044839144580894046,
+      "val_equilibrium_residual": 134.22861904568143
+    },
+    {
+      "epoch": 145,
+      "train_loss": 0.5444067981508043,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5003843506177267,
+      "val_hotspot_mae": 0.04427972725696034,
+      "val_equilibrium_residual": 131.9799813164605
+    },
+    {
+      "epoch": 146,
+      "train_loss": 0.5443131526311239,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5003186000718011,
+      "val_hotspot_mae": 0.044315709008110896,
+      "val_equilibrium_residual": 132.18613603379993
+    },
+    {
+      "epoch": 147,
+      "train_loss": 0.5444035430749258,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5001587900850508,
+      "val_hotspot_mae": 0.04447114053699705,
+      "val_equilibrium_residual": 132.31075371636285
+    },
+    {
+      "epoch": 148,
+      "train_loss": 0.5447446240319146,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5005259745650821,
+      "val_hotspot_mae": 0.044209653304682836,
+      "val_equilibrium_residual": 130.40464189317493
+    },
+    {
+      "epoch": 149,
+      "train_loss": 0.5559130443467034,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5126433935430315,
+      "val_hotspot_mae": 0.044858545892768435,
+      "val_equilibrium_residual": 136.04616207546658
+    },
+    {
+      "epoch": 150,
+      "train_loss": 0.5647421015633477,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5085993607838949,
+      "val_hotspot_mae": 0.044844129847155675,
+      "val_equilibrium_residual": 129.51719072129993
+    },
+    {
+      "epoch": 151,
+      "train_loss": 0.5760864019393921,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5146640605396695,
+      "val_hotspot_mae": 0.045001025001207985,
+      "val_equilibrium_residual": 135.82953135172525
+    },
+    {
+      "epoch": 152,
+      "train_loss": 0.5557535522513919,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5055620869000753,
+      "val_hotspot_mae": 0.045228944884406194,
+      "val_equilibrium_residual": 136.972412109375
+    },
+    {
+      "epoch": 153,
+      "train_loss": 0.5541655388143327,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008509755134583,
+      "val_hotspot_mae": 0.045009387036164604,
+      "val_equilibrium_residual": 134.6325971815321
+    },
+    {
+      "epoch": 154,
+      "train_loss": 0.5467818975448608,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.501120388507843,
+      "val_hotspot_mae": 0.04398579274614652,
+      "val_equilibrium_residual": 130.2592536078559
+    },
+    {
+      "epoch": 155,
+      "train_loss": 0.5505076779259576,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008432302210066,
+      "val_hotspot_mae": 0.044986217386192746,
+      "val_equilibrium_residual": 135.04305606418185
+    },
+    {
+      "epoch": 156,
+      "train_loss": 0.5561777916219499,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5021475884649489,
+      "val_hotspot_mae": 0.04387111051215066,
+      "val_equilibrium_residual": 128.37185923258463
+    },
+    {
+      "epoch": 157,
+      "train_loss": 0.5539529720942179,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5529346631632911,
+      "val_hotspot_mae": 0.04524346109893587,
+      "val_equilibrium_residual": 134.69360521104602
+    },
+    {
+      "epoch": 158,
+      "train_loss": 0.6275801658630371,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5180369681782193,
+      "val_hotspot_mae": 0.044401653938823275,
+      "val_equilibrium_residual": 124.02621968587239
+    },
+    {
+      "epoch": 159,
+      "train_loss": 0.5826503568225436,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.515622701909807,
+      "val_hotspot_mae": 0.04567617840237088,
+      "val_equilibrium_residual": 139.04433356391058
+    },
+    {
+      "epoch": 160,
+      "train_loss": 0.5571811695893606,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5028503868314955,
+      "val_hotspot_mae": 0.045202146801683635,
+      "val_equilibrium_residual": 135.3539318508572
+    },
+    {
+      "epoch": 161,
+      "train_loss": 0.566983183224996,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5044126378165351,
+      "val_hotspot_mae": 0.044348115308417216,
+      "val_equilibrium_residual": 128.26556735568576
+    },
+    {
+      "epoch": 162,
+      "train_loss": 0.5552759336100684,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5039726793766022,
+      "val_hotspot_mae": 0.046123652822441526,
+      "val_equilibrium_residual": 138.57224443223743
+    },
+    {
+      "epoch": 163,
+      "train_loss": 0.5537049074967703,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5063443813059065,
+      "val_hotspot_mae": 0.04445870924327108,
+      "val_equilibrium_residual": 135.80185190836588
+    },
+    {
+      "epoch": 164,
+      "train_loss": 0.5504225658045875,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5067941645781199,
+      "val_hotspot_mae": 0.04393120316995515,
+      "val_equilibrium_residual": 128.54912567138672
+    },
+    {
+      "epoch": 165,
+      "train_loss": 0.5481563541624281,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.501559317111969,
+      "val_hotspot_mae": 0.04519283109241062,
+      "val_equilibrium_residual": 135.64854855007596
+    },
+    {
+      "epoch": 166,
+      "train_loss": 0.5453737013869815,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5028765433364444,
+      "val_hotspot_mae": 0.04423842661910587,
+      "val_equilibrium_residual": 133.55330657958984
+    },
+    {
+      "epoch": 167,
+      "train_loss": 0.5454127622975243,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5004218253824446,
+      "val_hotspot_mae": 0.04431665481792556,
+      "val_equilibrium_residual": 131.4419733683268
+    },
+    {
+      "epoch": 168,
+      "train_loss": 0.5448650783962674,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5013299021455977,
+      "val_hotspot_mae": 0.04417974791593022,
+      "val_equilibrium_residual": 132.92618815104166
+    },
+    {
+      "epoch": 169,
+      "train_loss": 0.5440412792894576,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5002536740567949,
+      "val_hotspot_mae": 0.04443385286463632,
+      "val_equilibrium_residual": 133.03057776557074
+    },
+    {
+      "epoch": 170,
+      "train_loss": 0.543936140007443,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500350061390135,
+      "val_hotspot_mae": 0.04444323562913471,
+      "val_equilibrium_residual": 132.83985477023654
+    },
+    {
+      "epoch": 171,
+      "train_loss": 0.5439299510584937,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4998262259695265,
+      "val_hotspot_mae": 0.04425575832525889,
+      "val_equilibrium_residual": 132.23312717013889
+    },
+    {
+      "epoch": 172,
+      "train_loss": 0.5437524848514133,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5000550912486182,
+      "val_hotspot_mae": 0.044445528752273984,
+      "val_equilibrium_residual": 132.83241102430554
+    },
+    {
+      "epoch": 173,
+      "train_loss": 0.543604615661833,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4996960891617669,
+      "val_hotspot_mae": 0.044186735732687846,
+      "val_equilibrium_residual": 131.82820298936633
+    },
+    {
+      "epoch": 174,
+      "train_loss": 0.5439378321170807,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5002291897932688,
+      "val_hotspot_mae": 0.04453161731362343,
+      "val_equilibrium_residual": 133.55897437201605
+    },
+    {
+      "epoch": 175,
+      "train_loss": 0.5438736644056108,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4998408324188656,
+      "val_hotspot_mae": 0.043981519838174186,
+      "val_equilibrium_residual": 130.7685487535265
+    },
+    {
+      "epoch": 176,
+      "train_loss": 0.5437943935394287,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4998672604560852,
+      "val_hotspot_mae": 0.04458241495821211,
+      "val_equilibrium_residual": 133.38324313693576
+    },
+    {
+      "epoch": 177,
+      "train_loss": 0.543527881304423,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500103258424335,
+      "val_hotspot_mae": 0.04410696940289603,
+      "val_equilibrium_residual": 132.22283681233725
+    },
+    {
+      "epoch": 178,
+      "train_loss": 0.543685343530443,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49968261851204765,
+      "val_hotspot_mae": 0.04452443371216456,
+      "val_equilibrium_residual": 132.67954338921442
+    },
+    {
+      "epoch": 179,
+      "train_loss": 0.5435083872742124,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500034875339932,
+      "val_hotspot_mae": 0.04418272069758839,
+      "val_equilibrium_residual": 132.36255984836154
+    },
+    {
+      "epoch": 180,
+      "train_loss": 0.5434534218576219,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49951354331440395,
+      "val_hotspot_mae": 0.044199337975846395,
+      "val_equilibrium_residual": 131.56079610188803
+    },
+    {
+      "epoch": 181,
+      "train_loss": 0.5434359775649177,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4998473756843143,
+      "val_hotspot_mae": 0.04418727176056968,
+      "val_equilibrium_residual": 132.46810234917535
+    },
+    {
+      "epoch": 182,
+      "train_loss": 0.5438241064548492,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4994638098610772,
+      "val_hotspot_mae": 0.04424847372704082,
+      "val_equilibrium_residual": 131.51536390516492
+    },
+    {
+      "epoch": 183,
+      "train_loss": 0.5435846779081557,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5003126131163703,
+      "val_hotspot_mae": 0.04421515886982282,
+      "val_equilibrium_residual": 130.4449208577474
+    },
+    {
+      "epoch": 184,
+      "train_loss": 0.5440014004707336,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49944933586650425,
+      "val_hotspot_mae": 0.044307366427448064,
+      "val_equilibrium_residual": 132.45415835910373
+    },
+    {
+      "epoch": 185,
+      "train_loss": 0.5433657235569425,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5024054613378313,
+      "val_hotspot_mae": 0.04441974932948748,
+      "val_equilibrium_residual": 133.80225711398654
+    },
+    {
+      "epoch": 186,
+      "train_loss": 0.5471751126978133,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500673684808943,
+      "val_hotspot_mae": 0.044413683315118156,
+      "val_equilibrium_residual": 130.50482262505426
+    },
+    {
+      "epoch": 187,
+      "train_loss": 0.5450412796603309,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4992818699942695,
+      "val_hotspot_mae": 0.04434004012081358,
+      "val_equilibrium_residual": 132.46128167046442
+    },
+    {
+      "epoch": 188,
+      "train_loss": 0.5433420373333825,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49973565008905196,
+      "val_hotspot_mae": 0.044425794233878456,
+      "val_equilibrium_residual": 133.2710689968533
+    },
+    {
+      "epoch": 189,
+      "train_loss": 0.5451677507824368,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5001658201217651,
+      "val_hotspot_mae": 0.044385441889365516,
+      "val_equilibrium_residual": 133.76752217610678
+    },
+    {
+      "epoch": 190,
+      "train_loss": 0.5543637010786269,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5131455262502035,
+      "val_hotspot_mae": 0.04436003747913572,
+      "val_equilibrium_residual": 126.95016055636935
+    },
+    {
+      "epoch": 191,
+      "train_loss": 0.5477085842026604,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5043202208148109,
+      "val_hotspot_mae": 0.044476975169446736,
+      "val_equilibrium_residual": 135.32207489013672
+    },
+    {
+      "epoch": 192,
+      "train_loss": 0.5457824170589447,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5061478912830353,
+      "val_hotspot_mae": 0.04422683889667193,
+      "val_equilibrium_residual": 129.1878170437283
+    },
+    {
+      "epoch": 193,
+      "train_loss": 0.5465517342090607,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4993997249338362,
+      "val_hotspot_mae": 0.044264192382494606,
+      "val_equilibrium_residual": 132.5950436062283
+    },
+    {
+      "epoch": 194,
+      "train_loss": 0.5445130169391632,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5009719530741373,
+      "val_hotspot_mae": 0.04413419341047605,
+      "val_equilibrium_residual": 133.21174112955728
+    },
+    {
+      "epoch": 195,
+      "train_loss": 0.54330908258756,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4993916352589925,
+      "val_hotspot_mae": 0.044297954274548426,
+      "val_equilibrium_residual": 132.7912309434679
+    },
+    {
+      "epoch": 196,
+      "train_loss": 0.5436597665150961,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4990534418159061,
+      "val_hotspot_mae": 0.044063835508293576,
+      "val_equilibrium_residual": 130.34927368164062
+    },
+    {
+      "epoch": 197,
+      "train_loss": 0.5435094402896034,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5007710324393378,
+      "val_hotspot_mae": 0.04429151573114925,
+      "val_equilibrium_residual": 133.6425298055013
+    },
+    {
+      "epoch": 198,
+      "train_loss": 0.5431567993428972,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4988960888650682,
+      "val_hotspot_mae": 0.04409371399217182,
+      "val_equilibrium_residual": 131.1198001437717
+    },
+    {
+      "epoch": 199,
+      "train_loss": 0.542946371767256,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4988019069035848,
+      "val_hotspot_mae": 0.0443976873324977,
+      "val_equilibrium_residual": 132.55054219563803
+    },
+    {
+      "epoch": 200,
+      "train_loss": 0.5428528454568651,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4991617500782013,
+      "val_hotspot_mae": 0.0441931974556711,
+      "val_equilibrium_residual": 131.9708251953125
+    },
+    {
+      "epoch": 201,
+      "train_loss": 0.5434535973601871,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4995735122097863,
+      "val_hotspot_mae": 0.044872722691959806,
+      "val_equilibrium_residual": 133.6735585530599
+    },
+    {
+      "epoch": 202,
+      "train_loss": 0.5431986086898379,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4989280965593126,
+      "val_hotspot_mae": 0.043812459541691676,
+      "val_equilibrium_residual": 130.554690890842
+    },
+    {
+      "epoch": 203,
+      "train_loss": 0.5424336890379587,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4993786977397071,
+      "val_hotspot_mae": 0.0443040385014481,
+      "val_equilibrium_residual": 133.00802357991537
+    },
+    {
+      "epoch": 204,
+      "train_loss": 0.5429964959621429,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4992571473121643,
+      "val_hotspot_mae": 0.04415859985682699,
+      "val_equilibrium_residual": 131.2686335245768
+    },
+    {
+      "epoch": 205,
+      "train_loss": 0.5428992609182993,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4999682505925496,
+      "val_hotspot_mae": 0.04408080875873566,
+      "val_equilibrium_residual": 132.17950269911023
+    },
+    {
+      "epoch": 206,
+      "train_loss": 0.5442460278669993,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49921146697468227,
+      "val_hotspot_mae": 0.044595487829711705,
+      "val_equilibrium_residual": 133.01896582709418
+    },
+    {
+      "epoch": 207,
+      "train_loss": 0.5432781643337674,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4986623194482591,
+      "val_hotspot_mae": 0.04407815014322599,
+      "val_equilibrium_residual": 130.80294545491537
+    },
+    {
+      "epoch": 208,
+      "train_loss": 0.544443256325192,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500434978140725,
+      "val_hotspot_mae": 0.044486271838347115,
+      "val_equilibrium_residual": 134.25188530815973
+    },
+    {
+      "epoch": 209,
+      "train_loss": 0.5430728130870395,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49874259034792584,
+      "val_hotspot_mae": 0.044099845406081944,
+      "val_equilibrium_residual": 130.74659898546008
+    },
+    {
+      "epoch": 210,
+      "train_loss": 0.5432049069139693,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49924704763624406,
+      "val_hotspot_mae": 0.044308874756097794,
+      "val_equilibrium_residual": 132.90489451090494
+    },
+    {
+      "epoch": 211,
+      "train_loss": 0.5423604746659597,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4985554549429152,
+      "val_hotspot_mae": 0.04382861488395267,
+      "val_equilibrium_residual": 131.00216166178384
+    },
+    {
+      "epoch": 212,
+      "train_loss": 0.5425433152251773,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49874986211458844,
+      "val_hotspot_mae": 0.044452527744902506,
+      "val_equilibrium_residual": 132.21317630343967
+    },
+    {
+      "epoch": 213,
+      "train_loss": 0.5443237258328332,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4992146458890703,
+      "val_hotspot_mae": 0.04369258342517747,
+      "val_equilibrium_residual": 130.72292836507162
+    },
+    {
+      "epoch": 214,
+      "train_loss": 0.5430776046382056,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4991261065006256,
+      "val_hotspot_mae": 0.044519956741068095,
+      "val_equilibrium_residual": 133.82151540120444
+    },
+    {
+      "epoch": 215,
+      "train_loss": 0.5421389838059744,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4982791509893205,
+      "val_hotspot_mae": 0.04390073443452517,
+      "val_equilibrium_residual": 130.74637179904514
+    },
+    {
+      "epoch": 216,
+      "train_loss": 0.5421431528197395,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49853382839096916,
+      "val_hotspot_mae": 0.04434302697579066,
+      "val_equilibrium_residual": 132.6735322740343
+    },
+    {
+      "epoch": 217,
+      "train_loss": 0.5420411560270522,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4989655779467689,
+      "val_hotspot_mae": 0.04402295500040054,
+      "val_equilibrium_residual": 132.08128780788846
+    },
+    {
+      "epoch": 218,
+      "train_loss": 0.5419346160358853,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4983658757474687,
+      "val_hotspot_mae": 0.044136587944295674,
+      "val_equilibrium_residual": 131.79402330186633
+    },
+    {
+      "epoch": 219,
+      "train_loss": 0.5419004824426439,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4983049233754476,
+      "val_hotspot_mae": 0.04407591703865263,
+      "val_equilibrium_residual": 131.19144185384116
+    },
+    {
+      "epoch": 220,
+      "train_loss": 0.5433404544989268,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5003310971789889,
+      "val_hotspot_mae": 0.04430555262499385,
+      "val_equilibrium_residual": 134.04073588053384
+    },
+    {
+      "epoch": 221,
+      "train_loss": 0.5433969298998514,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49922117590904236,
+      "val_hotspot_mae": 0.044605419867568545,
+      "val_equilibrium_residual": 131.63221401638455
+    },
+    {
+      "epoch": 222,
+      "train_loss": 0.5452601181136237,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.50000728170077,
+      "val_hotspot_mae": 0.04416269560654958,
+      "val_equilibrium_residual": 130.01044040256076
+    },
+    {
+      "epoch": 223,
+      "train_loss": 0.5429397622744242,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49858680698606705,
+      "val_hotspot_mae": 0.04440044777260886,
+      "val_equilibrium_residual": 133.22836642795139
+    },
+    {
+      "epoch": 224,
+      "train_loss": 0.5417159729533725,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49835966030756634,
+      "val_hotspot_mae": 0.044022680156760745,
+      "val_equilibrium_residual": 131.72351837158203
+    },
+    {
+      "epoch": 225,
+      "train_loss": 0.5417155226071676,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49809783697128296,
+      "val_hotspot_mae": 0.04406946152448654,
+      "val_equilibrium_residual": 131.60663859049478
+    },
+    {
+      "epoch": 226,
+      "train_loss": 0.5418092972702451,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4990449183517032,
+      "val_hotspot_mae": 0.04435009550717142,
+      "val_equilibrium_residual": 133.58929189046225
+    },
+    {
+      "epoch": 227,
+      "train_loss": 0.5420198639233907,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5007984903123643,
+      "val_hotspot_mae": 0.04403804035650359,
+      "val_equilibrium_residual": 129.59716118706598
+    },
+    {
+      "epoch": 228,
+      "train_loss": 0.5487511853377024,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5036735667122735,
+      "val_hotspot_mae": 0.04422060027718544,
+      "val_equilibrium_residual": 128.95123714870877
+    },
+    {
+      "epoch": 229,
+      "train_loss": 0.547516855928633,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5005270540714264,
+      "val_hotspot_mae": 0.04424683004617691,
+      "val_equilibrium_residual": 133.6396230061849
+    },
+    {
+      "epoch": 230,
+      "train_loss": 0.5430873698658414,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4983534316221873,
+      "val_hotspot_mae": 0.04439068833986918,
+      "val_equilibrium_residual": 132.59708489312067
+    },
+    {
+      "epoch": 231,
+      "train_loss": 0.5490551458464729,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4975597427950965,
+      "val_hotspot_mae": 0.04385873716738489,
+      "val_equilibrium_residual": 129.38497500949435
+    },
+    {
+      "epoch": 232,
+      "train_loss": 0.5504415300157335,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5008018877771165,
+      "val_hotspot_mae": 0.0448321435186598,
+      "val_equilibrium_residual": 136.11319817437067
+    },
+    {
+      "epoch": 233,
+      "train_loss": 0.5601526631249322,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5559789836406708,
+      "val_hotspot_mae": 0.044094650695721306,
+      "val_equilibrium_residual": 118.92323811848958
+    },
+    {
+      "epoch": 234,
+      "train_loss": 0.6105652782652113,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5779943267504374,
+      "val_hotspot_mae": 0.045486804511812,
+      "val_equilibrium_residual": 134.8749474419488
+    },
+    {
+      "epoch": 235,
+      "train_loss": 0.6111239559120603,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5029158393541971,
+      "val_hotspot_mae": 0.04398854449391365,
+      "val_equilibrium_residual": 126.40554894341363
+    },
+    {
+      "epoch": 236,
+      "train_loss": 0.5575656261709001,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.500876271062427,
+      "val_hotspot_mae": 0.044794376525613994,
+      "val_equilibrium_residual": 135.25819057888455
+    },
+    {
+      "epoch": 237,
+      "train_loss": 0.5816713770230612,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5101377930906084,
+      "val_hotspot_mae": 0.04371011960837576,
+      "val_equilibrium_residual": 125.1705559624566
+    },
+    {
+      "epoch": 238,
+      "train_loss": 0.5801185501946343,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5014403661092123,
+      "val_hotspot_mae": 0.044854700565338135,
+      "val_equilibrium_residual": 135.64608256022134
+    },
+    {
+      "epoch": 239,
+      "train_loss": 0.5486146907011668,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011764466762543,
+      "val_hotspot_mae": 0.04401527593533198,
+      "val_equilibrium_residual": 129.8931427001953
+    },
+    {
+      "epoch": 240,
+      "train_loss": 0.5485977398024665,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5056171284781562,
+      "val_hotspot_mae": 0.0439139741162459,
+      "val_equilibrium_residual": 133.76755862765842
+    },
+    {
+      "epoch": 241,
+      "train_loss": 0.5493485099739499,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5105916096104516,
+      "val_hotspot_mae": 0.0447749180926217,
+      "val_equilibrium_residual": 129.30633375379773
+    },
+    {
+      "epoch": 242,
+      "train_loss": 0.5469860202736325,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5026293992996216,
+      "val_hotspot_mae": 0.04367516272597843,
+      "val_equilibrium_residual": 132.16540103488498
+    },
+    {
+      "epoch": 243,
+      "train_loss": 0.5461475484901004,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5013882252905104,
+      "val_hotspot_mae": 0.044047382142808705,
+      "val_equilibrium_residual": 129.65396881103516
+    },
+    {
+      "epoch": 244,
+      "train_loss": 0.549071772230996,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5084484252664778,
+      "val_hotspot_mae": 0.04403652043806182,
+      "val_equilibrium_residual": 133.28027174207898
+    },
+    {
+      "epoch": 245,
+      "train_loss": 0.5488792459170023,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5062553319666121,
+      "val_hotspot_mae": 0.0442101587024,
+      "val_equilibrium_residual": 128.1946046617296
+    },
+    {
+      "epoch": 246,
+      "train_loss": 0.5448792146311866,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.502748085392846,
+      "val_hotspot_mae": 0.044243280258443624,
+      "val_equilibrium_residual": 134.29500749376086
+    },
+    {
+      "epoch": 247,
+      "train_loss": 0.5433351960447099,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4987955888112386,
+      "val_hotspot_mae": 0.043982635355658,
+      "val_equilibrium_residual": 129.85073852539062
+    },
+    {
+      "epoch": 248,
+      "train_loss": 0.5423651801215278,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5011505385239919,
+      "val_hotspot_mae": 0.0440632121430503,
+      "val_equilibrium_residual": 133.32765536838107
+    },
+    {
+      "epoch": 249,
+      "train_loss": 0.5425538851155175,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4987532827589247,
+      "val_hotspot_mae": 0.043898566315571465,
+      "val_equilibrium_residual": 129.7829301622179
+    },
+    {
+      "epoch": 250,
+      "train_loss": 0.5418318576282926,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4983217981126573,
+      "val_hotspot_mae": 0.04421880096197128,
+      "val_equilibrium_residual": 132.48490397135416
+    },
+    {
+      "epoch": 251,
+      "train_loss": 0.5413022405571408,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49785512023501927,
+      "val_hotspot_mae": 0.04372029834323459,
+      "val_equilibrium_residual": 130.70988379584418
+    },
+    {
+      "epoch": 252,
+      "train_loss": 0.5413585238986545,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4979897207683987,
+      "val_hotspot_mae": 0.0442326847049925,
+      "val_equilibrium_residual": 132.19055938720703
+    },
+    {
+      "epoch": 253,
+      "train_loss": 0.5414311918947432,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4979841775364346,
+      "val_hotspot_mae": 0.04409244739347034,
+      "val_equilibrium_residual": 131.97490437825522
+    },
+    {
+      "epoch": 254,
+      "train_loss": 0.5411192410522037,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4976601004600525,
+      "val_hotspot_mae": 0.04379050764772627,
+      "val_equilibrium_residual": 130.67206403944226
+    },
+    {
+      "epoch": 255,
+      "train_loss": 0.5410678353574541,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4982146620750427,
+      "val_hotspot_mae": 0.04404322844412592,
+      "val_equilibrium_residual": 131.97539605034723
+    },
+    {
+      "epoch": 256,
+      "train_loss": 0.5410963892936707,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4975968665546841,
+      "val_hotspot_mae": 0.04389516015847524,
+      "val_equilibrium_residual": 130.75106896294488
+    },
+    {
+      "epoch": 257,
+      "train_loss": 0.5412609411610497,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49812299344274735,
+      "val_hotspot_mae": 0.0443260268204742,
+      "val_equilibrium_residual": 132.86424085828992
+    },
+    {
+      "epoch": 258,
+      "train_loss": 0.5412473877271017,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49807244539260864,
+      "val_hotspot_mae": 0.04403208651476436,
+      "val_equilibrium_residual": 132.00279066297742
+    },
+    {
+      "epoch": 259,
+      "train_loss": 0.5412039458751678,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4974228905306922,
+      "val_hotspot_mae": 0.04394290099541346,
+      "val_equilibrium_residual": 131.01785024007162
+    },
+    {
+      "epoch": 260,
+      "train_loss": 0.540975872013304,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4979081518120236,
+      "val_hotspot_mae": 0.04393263947632578,
+      "val_equilibrium_residual": 132.000365363227
+    },
+    {
+      "epoch": 261,
+      "train_loss": 0.5409418410725064,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49844441480106777,
+      "val_hotspot_mae": 0.044243157737784915,
+      "val_equilibrium_residual": 133.0554190741645
+    },
+    {
+      "epoch": 262,
+      "train_loss": 0.5414682759179009,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49729783336321515,
+      "val_hotspot_mae": 0.0436457387275166,
+      "val_equilibrium_residual": 129.57404327392578
+    },
+    {
+      "epoch": 263,
+      "train_loss": 0.5409019986788431,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4982307818200853,
+      "val_hotspot_mae": 0.04452561462918917,
+      "val_equilibrium_residual": 133.6006351047092
+    },
+    {
+      "epoch": 264,
+      "train_loss": 0.5413420465257432,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.498020695315467,
+      "val_hotspot_mae": 0.04388929779330889,
+      "val_equilibrium_residual": 131.2560831705729
+    },
+    {
+      "epoch": 265,
+      "train_loss": 0.5423664649327596,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49742952320310807,
+      "val_hotspot_mae": 0.04446201233400239,
+      "val_equilibrium_residual": 132.1559999254015
+    },
+    {
+      "epoch": 266,
+      "train_loss": 0.541815718015035,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49875995847913956,
+      "val_hotspot_mae": 0.04418547327319781,
+      "val_equilibrium_residual": 132.84893205430774
+    },
+    {
+      "epoch": 267,
+      "train_loss": 0.5434524317582449,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4988941152890523,
+      "val_hotspot_mae": 0.044228899810049266,
+      "val_equilibrium_residual": 132.94776238335504
+    },
+    {
+      "epoch": 268,
+      "train_loss": 0.5455881721443601,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5038926535182529,
+      "val_hotspot_mae": 0.04382086048523585,
+      "val_equilibrium_residual": 126.8406270345052
+    },
+    {
+      "epoch": 269,
+      "train_loss": 0.5573994351757897,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5300191938877106,
+      "val_hotspot_mae": 0.04412282920546002,
+      "val_equilibrium_residual": 132.0148900349935
+    },
+    {
+      "epoch": 270,
+      "train_loss": 0.5553997589482201,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5038240154584249,
+      "val_hotspot_mae": 0.04439555688036813,
+      "val_equilibrium_residual": 128.23646630181207
+    },
+    {
+      "epoch": 271,
+      "train_loss": 0.5449955132272508,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4996416038937039,
+      "val_hotspot_mae": 0.043973313437567815,
+      "val_equilibrium_residual": 132.7879113091363
+    },
+    {
+      "epoch": 272,
+      "train_loss": 0.5412794020440843,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4976115259859297,
+      "val_hotspot_mae": 0.043896511611011296,
+      "val_equilibrium_residual": 131.02828555636935
+    },
+    {
+      "epoch": 273,
+      "train_loss": 0.5409985813829634,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49730673763487077,
+      "val_hotspot_mae": 0.04399294861488872,
+      "val_equilibrium_residual": 130.77713606092664
+    },
+    {
+      "epoch": 274,
+      "train_loss": 0.5409504771232605,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49791446990436977,
+      "val_hotspot_mae": 0.04404546527398957,
+      "val_equilibrium_residual": 132.138180202908
+    },
+    {
+      "epoch": 275,
+      "train_loss": 0.5411452816592323,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4975942075252533,
+      "val_hotspot_mae": 0.0436320842968093,
+      "val_equilibrium_residual": 130.3472383287218
+    },
+    {
+      "epoch": 276,
+      "train_loss": 0.5405483113394843,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.497305777337816,
+      "val_hotspot_mae": 0.04419959005382326,
+      "val_equilibrium_residual": 131.9248521592882
+    },
+    {
+      "epoch": 277,
+      "train_loss": 0.5404660006364187,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4975447952747345,
+      "val_hotspot_mae": 0.04379454255104065,
+      "val_equilibrium_residual": 130.83965471055774
+    },
+    {
+      "epoch": 278,
+      "train_loss": 0.5404296252462599,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49726318650775486,
+      "val_hotspot_mae": 0.04382307123806742,
+      "val_equilibrium_residual": 130.4626439412435
+    },
+    {
+      "epoch": 279,
+      "train_loss": 0.5403820640510983,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49737605783674455,
+      "val_hotspot_mae": 0.043767604562971324,
+      "val_equilibrium_residual": 130.95064205593533
+    },
+    {
+      "epoch": 280,
+      "train_loss": 0.5402895642651452,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49696634544266594,
+      "val_hotspot_mae": 0.043795645236968994,
+      "val_equilibrium_residual": 130.5759251912435
+    },
+    {
+      "epoch": 281,
+      "train_loss": 0.5403199891249338,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49796823660532635,
+      "val_hotspot_mae": 0.044164529277218714,
+      "val_equilibrium_residual": 132.1998291015625
+    },
+    {
+      "epoch": 282,
+      "train_loss": 0.5406299100981818,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4974820978111691,
+      "val_hotspot_mae": 0.04373232647776604,
+      "val_equilibrium_residual": 129.53086429172092
+    },
+    {
+      "epoch": 283,
+      "train_loss": 0.5410843027962579,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4983838101228078,
+      "val_hotspot_mae": 0.04421401023864746,
+      "val_equilibrium_residual": 132.95099555121527
+    },
+    {
+      "epoch": 284,
+      "train_loss": 0.5409739149941338,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49735210670365226,
+      "val_hotspot_mae": 0.043746097634236016,
+      "val_equilibrium_residual": 130.77019670274524
+    },
+    {
+      "epoch": 285,
+      "train_loss": 0.5407277908590105,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49779431025187176,
+      "val_hotspot_mae": 0.04411913578708967,
+      "val_equilibrium_residual": 132.0264460245768
+    },
+    {
+      "epoch": 286,
+      "train_loss": 0.5406023495727115,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4987974928485023,
+      "val_hotspot_mae": 0.04412758764293459,
+      "val_equilibrium_residual": 131.8447469075521
+    },
+    {
+      "epoch": 287,
+      "train_loss": 0.5419624944527944,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4981256094243791,
+      "val_hotspot_mae": 0.04407827224996355,
+      "val_equilibrium_residual": 130.95270284016928
+    },
+    {
+      "epoch": 288,
+      "train_loss": 0.5424645410643684,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49707932935820687,
+      "val_hotspot_mae": 0.043492535750071205,
+      "val_equilibrium_residual": 129.07223425971137
+    },
+    {
+      "epoch": 289,
+      "train_loss": 0.5414471626281738,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49964043498039246,
+      "val_hotspot_mae": 0.04431226187282138,
+      "val_equilibrium_residual": 133.51529184977213
+    },
+    {
+      "epoch": 290,
+      "train_loss": 0.542330308092965,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5131523178683387,
+      "val_hotspot_mae": 0.043724384986692004,
+      "val_equilibrium_residual": 125.75580766465929
+    },
+    {
+      "epoch": 291,
+      "train_loss": 0.5532349314954546,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5043492151631249,
+      "val_hotspot_mae": 0.04402768322163158,
+      "val_equilibrium_residual": 132.90802510579428
+    },
+    {
+      "epoch": 292,
+      "train_loss": 0.5428480671511756,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5060330993599362,
+      "val_hotspot_mae": 0.044150823106368385,
+      "val_equilibrium_residual": 127.89478386773004
+    },
+    {
+      "epoch": 293,
+      "train_loss": 0.5552660359276665,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5175855424669054,
+      "val_hotspot_mae": 0.04407510658105215,
+      "val_equilibrium_residual": 134.12778557671442
+    },
+    {
+      "epoch": 294,
+      "train_loss": 0.580214649438858,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4971185889508989,
+      "val_hotspot_mae": 0.043991436147027545,
+      "val_equilibrium_residual": 127.80849202473958
+    },
+    {
+      "epoch": 295,
+      "train_loss": 0.5840518209669325,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5041862395074632,
+      "val_hotspot_mae": 0.04627002030611038,
+      "val_equilibrium_residual": 141.942259894477
+    },
+    {
+      "epoch": 296,
+      "train_loss": 0.5682431956132253,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5020261837376488,
+      "val_hotspot_mae": 0.04364524823096064,
+      "val_equilibrium_residual": 126.16949886745877
+    },
+    {
+      "epoch": 297,
+      "train_loss": 0.5533463425106473,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5044223202599419,
+      "val_hotspot_mae": 0.0445880393187205,
+      "val_equilibrium_residual": 135.38470798068576
+    },
+    {
+      "epoch": 298,
+      "train_loss": 0.558149880833096,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.4982049696975284,
+      "val_hotspot_mae": 0.04308145451876852,
+      "val_equilibrium_residual": 125.87786526150174
+    },
+    {
+      "epoch": 299,
+      "train_loss": 0.5615824924574958,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.5001446339819167,
+      "val_hotspot_mae": 0.044743391374746956,
+      "val_equilibrium_residual": 134.65468173556857
+    },
+    {
+      "epoch": 300,
+      "train_loss": 0.5437813169426389,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.49762717882792157,
+      "val_hotspot_mae": 0.043468581719530955,
+      "val_equilibrium_residual": 128.6891801622179
+    }
+  ],
+  "repair_fraction": 0.6
+}
