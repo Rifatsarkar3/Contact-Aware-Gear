@@ -1,5 +1,7 @@
 # Misranked by Small Samples
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22761338.svg)](https://doi.org/10.5281/zenodo.22761338)
+
 Code, datasets, and complete result logs for:
 
 > **Misranked by Small Samples: Underpowered Architecture Comparisons in
@@ -10,8 +12,9 @@ Code, datasets, and complete result logs for:
 > Huai'an 223003, Jiangsu, China
 > \*Corresponding author
 
-**Status: under review at *Neural Networks*.** This README will be updated
-with the final citation and DOI on acceptance.
+**Status: under review at *Neural Networks*.** This release is archived on
+Zenodo with a citable DOI (see [Citation](#citation)); the article citation
+will be added on acceptance.
 
 ## What this paper claims
 
@@ -162,8 +165,21 @@ every table and figure.
 
 ## Citation
 
-See [CITATION.cff](CITATION.cff). Until the paper appears, please cite the
-repository itself and note that the manuscript is under review.
+This release is archived on Zenodo. Cite the deposit as:
+
+> Zhang, T., & Sarkar, M. R. H. R. (2026). *Misranked by Small Samples: code,
+> datasets and result logs for underpowered architecture comparisons in
+> physics-informed neural operator learning* (Version 1.0.0) [Computer
+> software]. Zenodo. https://doi.org/10.5281/zenodo.22761338
+
+- **Version DOI** (this exact release, use for reproducibility):
+  [`10.5281/zenodo.22761338`](https://doi.org/10.5281/zenodo.22761338)
+- **Concept DOI** (always resolves to the latest version):
+  [`10.5281/zenodo.22761337`](https://doi.org/10.5281/zenodo.22761337)
+
+See [CITATION.cff](CITATION.cff) for machine-readable metadata. The
+accompanying manuscript is under review at *Neural Networks*; this section
+will be updated with the article citation on acceptance.
 
 ## Funding
 
