@@ -1,0 +1,38 @@
+{
+  "upload_type": "software",
+  "title": "Misranked by Small Samples: code, datasets and result logs for underpowered architecture comparisons in physics-informed neural operator learning",
+  "description": "<p>Code, processed finite-element datasets, and the complete per-seed result logs accompanying the manuscript <em>\"Misranked by Small Samples: Underpowered Architecture Comparisons in Physics-Informed Neural Operator Learning for Stress-Field Prediction\"</em> (under review, <em>Neural Networks</em>).</p><p>Architecture comparisons in physics-informed neural operator learning are routinely run at the sample sizes nonlinear finite-element analysis realistically supplies, tens to low hundreds of cases rather than thousands. At that scale such comparisons can rank mechanisms wrongly: the true effect is not absent, the sample simply lacks the statistical power to detect it. Ten structurally distinct architectural interventions, a proper-orthogonal-decomposition baseline, a U-Net and a from-scratch DeepONet are tested under a leakage-safe, capacity-matched, multi-seed protocol; only a loss-only physics-consistency penalty survives. Replication on an independently sampled dataset 2.5 times larger exposes the misranking directly.</p><p>This deposit contains: the <code>gearstress</code> package (finite-element case building and CalculiX I/O, models, physics losses, the architectural mechanisms under test, active-learning acquisition strategies, leakage-safe dataset splitting); all 47 dataset-generation, training, study and analysis scripts; the test suite; 12 model-ready HDF5 datasets including the primary v1 (63 cases) and v2 (144 cases) gear datasets, a v3 replication set, a geometry-varying set, the reconstructed active-learning datasets and a plate-with-elliptical-hole second-domain pilot; and 2,205 per-seed result logs and study summaries from which every table and figure in the manuscript was computed.</p><p>Trained-model checkpoints (approximately 3.5 GB across 750 training runs) and raw CalculiX solver output (approximately 10 GB) are not included here and are available from the corresponding author on reasonable request.</p><p>Source code is released under the MIT License; datasets and result logs under CC BY 4.0.</p>",
+  "creators": [
+    {
+      "name": "Zhang, Tao",
+      "affiliation": "Faculty of Mechanical and Material Engineering, Huai'an University (HAU), Huai'an, Jiangsu, China"
+    },
+    {
+      "name": "Sarkar, Mohammad Raziul Hasan Rifat",
+      "affiliation": "Faculty of Mechanical and Material Engineering, Huai'an University (HAU), Huai'an, Jiangsu, China",
+      "orcid": "0009-0006-0352-1508"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "version": "1.0.0",
+  "language": "eng",
+  "keywords": [
+    "neural operator learning",
+    "physics-informed machine learning",
+    "Fourier neural operator",
+    "model selection",
+    "statistical power",
+    "gear contact stress",
+    "finite element analysis",
+    "active learning",
+    "reproducibility"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Rifatsarkar3/Contact-Aware-Gear",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
