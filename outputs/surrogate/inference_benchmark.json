@@ -1,0 +1,30 @@
+{
+  "hardware": {
+    "device": "cpu",
+    "torch_threads": 6,
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "torch": "2.13.0+cpu"
+  },
+  "fem_solver": {
+    "n_solves": 270,
+    "median_s": 25.30755,
+    "mean_s": 27.098124811111113,
+    "p10_s": 22.2927714,
+    "p90_s": 33.0811233,
+    "max_s": 44.231699,
+    "scope": "CalculiX solver only; meshing excluded"
+  },
+  "surrogate": {
+    "parameters": 667515,
+    "batch_size": 27,
+    "single_network_one_case_ms": 8.777552000101423,
+    "single_network_batched_ms_per_case": 2.8758085185135887,
+    "ten_member_ensemble_batched_ms_per_case": 27.790670370360417
+  },
+  "speedup_vs_median_solve": {
+    "single_network_one_case": 2883.2127681735833,
+    "single_network_batched": 8800.151274703312,
+    "ten_member_ensemble_batched": 910.6491373806966
+  },
+  "timing_method": "median of 7 repeated blocks after warm-up"
+}

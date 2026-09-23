@@ -1,0 +1,68 @@
+{
+  "evidence_status": "phase-dense quasi-static mating-tooth extension with real time/speed labels; not mesh/time-step-qualified final transient evidence; real-inertia *DYNAMIC solve did not converge, see docs/TRANSIENT_FEM_SMOKE_2026-07-16.md",
+  "method": "MICE-LPM",
+  "seed": 42,
+  "selection_rule": "minimize validation relative_l2 + 2 * hotspot_mae subject to equilibrium <= 100",
+  "equilibrium_budget": 100.0,
+  "contact_weight": 8.0,
+  "hotspot_weight": 2.0,
+  "split_samples": {
+    "train": 36,
+    "validation": 9,
+    "test": 18
+  },
+  "target_scale_mpa_or_native": 1601.829833984375,
+  "grid_spacing_mm": {
+    "dx": 0.1111111111111111,
+    "dy": 0.10634920634920635
+  },
+  "validation": {
+    "relative_l2": 0.4137428104877472,
+    "hotspot_mae": 0.03516921028494835,
+    "equilibrium_residual": 99.99547576904297,
+    "repair_fraction_mean": 0.5768076578776041,
+    "repair_fraction_min": 0.548004150390625,
+    "repair_fraction_max": 0.643798828125,
+    "repair_fractions": [
+      0.6112823486328125,
+      0.643798828125,
+      0.5746612548828125,
+      0.5566558837890625,
+      0.5646514892578125,
+      0.568389892578125,
+      0.57275390625,
+      0.548004150390625,
+      0.5510711669921875
+    ],
+    "wall_seconds": 0.06701859999157023
+  },
+  "test": {
+    "relative_l2": 0.41237473487854004,
+    "hotspot_mae": 0.0340101532638073,
+    "equilibrium_residual": 99.99588012695312,
+    "repair_fraction_mean": 0.5677049424913194,
+    "repair_fraction_min": 0.48577880859375,
+    "repair_fraction_max": 0.6403961181640625,
+    "repair_fractions": [
+      0.5481109619140625,
+      0.48577880859375,
+      0.56903076171875,
+      0.56402587890625,
+      0.5608062744140625,
+      0.5534820556640625,
+      0.5706634521484375,
+      0.639007568359375,
+      0.608978271484375,
+      0.6091461181640625,
+      0.6403961181640625,
+      0.57342529296875,
+      0.55364990234375,
+      0.56072998046875,
+      0.5642242431640625,
+      0.5690765380859375,
+      0.5001220703125,
+      0.54803466796875
+    ],
+    "wall_seconds": 0.09746330000052694
+  }
+}

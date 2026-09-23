@@ -1,0 +1,154 @@
+{
+  "protocol": {
+    "held_out": "complete trajectories, grouped_trajectory_split",
+    "v2_test_cases": 27,
+    "v2_test_trajectories": 3,
+    "target_scale": "max |target| over the training partition only"
+  },
+  "v2_vanilla_fno": {
+    "n_seeds": 10,
+    "single_seed_mean": {
+      "relative_l2": 0.09006320238113404,
+      "relative_l2_sd": 0.0051334518329956775,
+      "r2": 0.9950728356838227,
+      "hotspot_mae": 0.0037174591096118094,
+      "equilibrium_residual": 501.65891723632814
+    },
+    "ensemble": {
+      "relative_l2": 0.051154594868421555,
+      "r2": 0.9978220462799072,
+      "hotspot_mae": 0.0022628612350672483,
+      "equilibrium_residual": 491.342529296875
+    },
+    "ensemble_void_masked": {
+      "relative_l2": 0.0479736253619194,
+      "r2": 0.9978220462799072,
+      "r2_per_channel": {
+        "sxx": 0.997829794883728,
+        "syy": 0.9975312352180481,
+        "sxy": 0.9985256791114807
+      },
+      "pearson_r": 0.998929583081424,
+      "hotspot_mae": 0.0022628612350672483,
+      "equilibrium_residual": 491.342529296875
+    },
+    "void_share_of_squared_error_before_masking": 0.11121821403503418
+  },
+  "v2_physics_fno": {
+    "n_seeds": 10,
+    "single_seed_mean": {
+      "relative_l2": 0.09619543775916099,
+      "relative_l2_sd": 0.012292888327927395,
+      "r2": 0.9936058342456817,
+      "hotspot_mae": 0.003841838403604925,
+      "equilibrium_residual": 391.4948394775391
+    },
+    "ensemble": {
+      "relative_l2": 0.06067453324794769,
+      "r2": 0.996805727481842,
+      "hotspot_mae": 0.0024551202077418566,
+      "equilibrium_residual": 383.7301025390625
+    },
+    "ensemble_void_masked": {
+      "relative_l2": 0.058074548840522766,
+      "r2": 0.996805727481842,
+      "r2_per_channel": {
+        "sxx": 0.9967432618141174,
+        "syy": 0.9965599775314331,
+        "sxy": 0.9973926544189453
+      },
+      "pearson_r": 0.9984427769025619,
+      "hotspot_mae": 0.0024551202077418566,
+      "equilibrium_residual": 383.7301025390625
+    },
+    "void_share_of_squared_error_before_masking": 0.09156990796327591
+  },
+  "regime_dependence": {
+    "v1_36_train": {
+      "n_seeds": 30,
+      "single_seed_relative_l2": 0.22334579428037007,
+      "ensemble_relative_l2": 0.18110114336013794,
+      "error_reduction": 0.18914459999726546
+    },
+    "v3_36_train_independent": {
+      "n_seeds": 10,
+      "single_seed_relative_l2": 0.22466465681791306,
+      "ensemble_relative_l2": 0.19301268458366394,
+      "error_reduction": 0.14088540975941094
+    },
+    "v2_90_train": {
+      "n_seeds": 10,
+      "single_seed_relative_l2": 0.09006320238113404,
+      "ensemble_relative_l2": 0.051154594868421555,
+      "error_reduction": 0.4320144796545992
+    },
+    "v2_90_train_alternate_partition": {
+      "n_seeds": 10,
+      "single_seed_relative_l2": 0.09185229167342186,
+      "ensemble_relative_l2": 0.052932120859622955,
+      "error_reduction": 0.42372563715860717
+    }
+  },
+  "peak_root_fillet_von_mises": {
+    "vanilla_fno": {
+      "single_seed_expected": {
+        "abs_rel_error": 0.07103406339883804,
+        "signed_bias": -0.05353794014081359
+      },
+      "ensemble_field_then_peak": {
+        "abs_rel_error": 0.06161625683307648,
+        "signed_bias": -0.05545079708099365
+      },
+      "ensemble_of_peak_values": {
+        "abs_rel_error": 0.05977979302406311,
+        "signed_bias": -0.05353792384266853
+      }
+    },
+    "aee_fno": {
+      "single_seed_expected": {
+        "abs_rel_error": 0.05361591167747974,
+        "signed_bias": -0.026169648487120868
+      },
+      "ensemble_field_then_peak": {
+        "abs_rel_error": 0.042906928807497025,
+        "signed_bias": -0.028409423306584358
+      },
+      "ensemble_of_peak_values": {
+        "abs_rel_error": 0.04106023907661438,
+        "signed_bias": -0.026169657707214355
+      }
+    }
+  },
+  "scaling_law_v2": {
+    "points": {
+      "36": {
+        "mean_relative_l2": 0.21265898313787246,
+        "n_seeds": 10
+      },
+      "45": {
+        "mean_relative_l2": 0.18987702236131385,
+        "n_seeds": 10
+      },
+      "63": {
+        "mean_relative_l2": 0.10498995424972639,
+        "n_seeds": 10
+      },
+      "72": {
+        "mean_relative_l2": 0.1067228384591915,
+        "n_seeds": 10
+      },
+      "90": {
+        "mean_relative_l2": 0.0900815222274374,
+        "n_seeds": 10
+      }
+    },
+    "coefficient": 8.551714024403884,
+    "exponent": -1.0260348175888594,
+    "r2_log_log": 0.939893913397024,
+    "fitted_range_n_train": [
+      36,
+      90
+    ],
+    "note": "Valid over the fitted range only; not to be extrapolated as a result."
+  }
+}

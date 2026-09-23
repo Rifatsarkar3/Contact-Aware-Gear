@@ -1,0 +1,113 @@
+{
+  "evidence_status": "phase-dense quasi-static mating-tooth extension with real time/speed labels; not mesh/time-step-qualified final transient evidence; real-inertia *DYNAMIC solve did not converge, see docs/TRANSIENT_FEM_SMOKE_2026-07-16.md",
+  "model": "dct_fno",
+  "seed": 42,
+  "split_seed": 42,
+  "epochs": 10,
+  "physics_warmup_epochs": 0,
+  "learning_rate": 0.001,
+  "split_samples": {
+    "train": 36,
+    "val": 9,
+    "test": 18
+  },
+  "target_scale_mpa_or_native": 1601.829833984375,
+  "grid_spacing_mm": {
+    "dx": 0.1111111111111111,
+    "dy": 0.10634920634920635
+  },
+  "model_architecture": {
+    "width": 24,
+    "modes_x": 12,
+    "modes_y": 12,
+    "layers": 4
+  },
+  "best_val_relative_l2": 0.9977710975541009,
+  "test": {
+    "relative_l2": 0.9988975789811876,
+    "hotspot_mae": 0.086857161588139,
+    "equilibrium_residual": 271.0909152560764
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 9.863019069035849,
+      "physics_weight": 0.0,
+      "val_relative_l2": 5.274996214442783,
+      "val_hotspot_mae": 0.10652732021278805,
+      "val_equilibrium_residual": 0.0364973611301846
+    },
+    {
+      "epoch": 2,
+      "train_loss": 4.373856928613451,
+      "physics_weight": 0.0,
+      "val_relative_l2": 2.0064894093407526,
+      "val_hotspot_mae": 0.08825030426184337,
+      "val_equilibrium_residual": 3.7854659822252064
+    },
+    {
+      "epoch": 3,
+      "train_loss": 2.5563373300764294,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.8463350468211703,
+      "val_hotspot_mae": 0.08906943599383037,
+      "val_equilibrium_residual": 9.212129063076443
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.5144950018988714,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.4022078381644354,
+      "val_hotspot_mae": 0.09009662104977502,
+      "val_equilibrium_residual": 23.57977506849501
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.503937840461731,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.3890692525439792,
+      "val_hotspot_mae": 0.08776092363728417,
+      "val_equilibrium_residual": 19.395875930786133
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.4715081055959065,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.316889266173045,
+      "val_hotspot_mae": 0.08861246208349864,
+      "val_equilibrium_residual": 36.017114851209854
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.739306198226081,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.3069413370556302,
+      "val_hotspot_mae": 0.08734337488810222,
+      "val_equilibrium_residual": 64.25632010565863
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.7376013861762152,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.7608341839578416,
+      "val_hotspot_mae": 0.08562180234326257,
+      "val_equilibrium_residual": 35.277123027377655
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.5741487476560805,
+      "physics_weight": 0.0,
+      "val_relative_l2": 0.9977710975541009,
+      "val_hotspot_mae": 0.08497645788722569,
+      "val_equilibrium_residual": 271.7525855170356
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.4405408965216742,
+      "physics_weight": 0.0,
+      "val_relative_l2": 1.021814352936215,
+      "val_hotspot_mae": 0.08508153590891096,
+      "val_equilibrium_residual": 196.29860602484808
+    }
+  ]
+}

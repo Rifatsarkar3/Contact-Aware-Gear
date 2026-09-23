@@ -1,0 +1,72 @@
+{
+  "date": "2026-07-13",
+  "seed": 42,
+  "epochs": 10,
+  "dataset": "gear_pair_smoke_v1.h5",
+  "dataset_cases": 21,
+  "trajectories": 7,
+  "frames_per_trajectory": 3,
+  "split_samples": {
+    "train": 12,
+    "validation": 3,
+    "test": 6
+  },
+  "mesh_size_mm": 0.12,
+  "target_scale_mpa": 1349.531982421875,
+  "reference_equilibrium_residual": 516.8328857421875,
+  "models": {
+    "fno": {
+      "relative_l2": 0.7384539445241293,
+      "hotspot_mae": 0.059648677706718445,
+      "hotspot_mae_mpa": 80.49779827439124,
+      "equilibrium_residual": 235.64743041992188
+    },
+    "fno_physics": {
+      "relative_l2": 0.747378945350647,
+      "hotspot_mae": 0.06220035379131635,
+      "hotspot_mae_mpa": 83.94136675933714,
+      "equilibrium_residual": 105.03990173339844
+    },
+    "fno_physics_warmup5": {
+      "relative_l2": 0.7435286641120911,
+      "hotspot_mae": 0.06054199362794558,
+      "hotspot_mae_mpa": 81.70335668049393,
+      "equilibrium_residual": 154.75302124023438
+    },
+    "unet": {
+      "relative_l2": 1.0239988962809246,
+      "hotspot_mae": 0.10238440831502278,
+      "hotspot_mae_mpa": 138.177983897378
+    },
+    "lpm_fno": {
+      "relative_l2": 0.5910703937212626,
+      "hotspot_mae": 0.046389694015185036,
+      "hotspot_mae_mpa": 62.60538222084022,
+      "equilibrium_residual": 368.7340799967448
+    },
+    "lpm_rcr_fno": {
+      "repair_fraction": 0.6,
+      "relative_l2": 0.6461850007375082,
+      "hotspot_mae": 0.05692526698112488,
+      "hotspot_mae_mpa": 76.82246839893196,
+      "equilibrium_residual": 94.64183044433594
+    },
+    "mice_lpm": {
+      "equilibrium_budget": 94.0,
+      "contact_weight": 8.0,
+      "hotspot_weight": 2.0,
+      "repair_fraction_mean": 0.515960693359375,
+      "relative_l2": 0.6394439935684204,
+      "hotspot_mae": 0.049730755388736725,
+      "hotspot_mae_mpa": 67.11324490709922,
+      "equilibrium_residual": 93.9978256225586
+    }
+  },
+  "gate": {
+    "fno_vs_unet": "pass",
+    "physics_accuracy": "pass for MICE-LPM smoke candidate",
+    "full_multiseed_authorized": true,
+    "world_sota_claim_authorized": false,
+    "reason": "MICE-LPM strictly improves field error, hotspot error, and equilibrium residual over the previous LPM-RCR-FNO winner in the locked seed-42 smoke; full-data multi-seed and matched-SOTA confirmation remain required."
+  }
+}
