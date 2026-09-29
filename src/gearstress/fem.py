@@ -1102,3 +1102,352 @@ def project_case_to_grid(case_dir: Path, grid_size: int = 64) -> dict[str, np.nd
         "x": xx.astype(np.float32),
         "y": yy.astype(np.float32),
     }
+
+
+# ---------------------------------------------------------------------------
+# Gear-mesh case with kinematically consistent loading (added 2026-09-27).
+#
+# ``build_gear_pair_case`` above displaces the mating rim along the line joining
+# the closest vertices of the two faceted flank polygons. That direction is not
+# the flank normal (it deviates by up to ~90 deg), so the imposed load and the
+# direction of friction depend on the flank discretization. The builder below
+# keeps the same tooth geometry and meshing but
+#   * places the two teeth in conjugate mesh with zero backlash, with the contact
+#     point found on densely sampled involutes (so it lies on the line of action),
+#   * loads the pair by one rigid translation of the mating gear: ``approach_mm``
+#     along the line of action plus a tangential slip with the sign of the
+#     kinematic sliding in the running sense (driver clockwise, pushing with its
+#     right flank), which reverses at the pitch point,
+# so the normal load is set by ``approach_mm`` and the direction of sliding by
+# the gear kinematics (it reverses at the pitch point). The driver rim stays fixed;
+# the whole motion is expressed in the driver's frame.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class GearMeshCase:
+    """Quasi-static tooth-pair contact at a given point of the line of action."""
+
+    module_mm: float = 2.0
+    teeth: int = 24
+    pressure_angle_deg: float = 20.0
+    face_width_mm: float = 1.0
+    root_clearance_module: float = 0.25
+    line_of_action_mm: float = 0.0     # contact position from the pitch point, + toward the driver tip
+    approach_mm: float = 0.008         # normal approach imposed along the line of action
+    slip_mm: float = 0.015             # imposed tangential slip magnitude (full sliding)
+    slip_ramp_mm: float = 0.05         # slip ramps linearly to zero within this distance of the pitch point
+    friction: float = 0.08
+    youngs_modulus_mpa: float = 210_000.0
+    poisson_ratio: float = 0.30
+    mesh_size_mm: float = 0.12
+    contact_penalty_factor: float = 50.0
+    flank_samples: int = 80
+
+    @property
+    def pitch_radius_mm(self) -> float:
+        return 0.5 * self.module_mm * self.teeth
+
+    @property
+    def base_radius_mm(self) -> float:
+        return self.pitch_radius_mm * math.cos(math.radians(self.pressure_angle_deg))
+
+    @property
+    def outer_radius_mm(self) -> float:
+        return self.pitch_radius_mm + self.module_mm
+
+    @property
+    def root_radius_mm(self) -> float:
+        return self.pitch_radius_mm - self.module_mm * (1.0 + self.root_clearance_module)
+
+    @property
+    def single_contact_half_length_mm(self) -> float:
+        """Half length of the single-tooth-contact zone on the line of action (equal gears)."""
+        rb, ra, rp = self.base_radius_mm, self.outer_radius_mm, self.pitch_radius_mm
+        alpha = math.radians(self.pressure_angle_deg)
+        path = 2.0 * math.sqrt(ra * ra - rb * rb) - 2.0 * rp * math.sin(alpha)
+        base_pitch = math.pi * self.module_mm * math.cos(alpha)
+        return base_pitch - 0.5 * path
+
+
+def _rot(angle: float) -> np.ndarray:
+    return np.asarray(((math.cos(angle), -math.sin(angle)), (math.sin(angle), math.cos(angle))), dtype=np.float64)
+
+
+def gear_mesh_pose(case: GearMeshCase, driver_angle: float) -> tuple[np.ndarray, np.ndarray]:
+    """Rotation and centre of the mating tooth in the driver frame, zero backlash.
+
+    Same kinematics as ``mating_tooth_transform`` (equal gears, the mating gear
+    half a tooth pitch out of phase and counter-rotating) without the clearance
+    translation.
+    """
+    tooth_pitch = 2.0 * math.pi / case.teeth
+    rotation = _rot(math.pi + 0.5 * tooth_pitch - 2.0 * driver_angle)
+    centre = _rot(-driver_angle) @ np.asarray((0.0, 2.0 * case.pitch_radius_mm))
+    return rotation, centre
+
+
+def gear_mesh_contact(case: GearMeshCase, driver_angle: float, samples: int = 4001) -> dict:
+    """Contact point, outward flank normal (driver) and line-of-action position.
+
+    Uses densely sampled continuous involutes of the driver's right flank and
+    both flanks of the mating tooth.
+    """
+    from scipy.spatial import cKDTree
+
+    left = conjugate_involute_flank(case, samples)
+    right = left.copy()
+    right[:, 0] *= -1.0
+    rotation, centre = gear_mesh_pose(case, driver_angle)
+    mating = np.vstack((left, right)) @ rotation.T + centre
+    dist, idx = cKDTree(mating).query(right)
+    k = int(np.argmin(dist))
+    k = min(max(k, 1), len(right) - 2)
+    point = right[k]
+    tangent = right[k + 1] - right[k - 1]
+    tangent /= np.linalg.norm(tangent)
+    if tangent @ point < 0:                        # tangent toward the tooth tip
+        tangent = -tangent
+    normal = np.array((tangent[1], -tangent[0]))   # outward from the driver's right flank
+    if normal[0] < 0:
+        normal = -normal
+    pitch_point = 0.5 * centre
+    # on conjugate involutes the contact lies on the line of action through the pitch point
+    s = float(np.sign(np.linalg.norm(point) - case.pitch_radius_mm) * np.linalg.norm(point - pitch_point))
+    d_pp = point - pitch_point
+    off_line = float(abs(d_pp[0] * normal[1] - d_pp[1] * normal[0]))
+    return {"point": point, "normal": normal, "tangent": tangent, "gap": float(dist[k]),
+            "line_of_action_mm": s, "off_line_of_action_mm": off_line, "radius_mm": float(np.linalg.norm(point)),
+            "rotation": rotation, "centre": centre}
+
+
+def gear_mesh_angle_for(case: GearMeshCase, target_s: float) -> float:
+    """Driver angle (radians) that puts the contact at ``target_s`` on the line of action.
+
+    Conjugate involute action moves the contact along the line of action by r_b per
+    radian, so the angle is linear in s. The reference angle is solved once at
+    s = -0.8 mm, away from the pitch point where the closest-point search is
+    ill-conditioned (the flanks are nearly parallel there).
+    """
+    s_ref = -0.8
+    f = lambda a: gear_mesh_contact(case, a)["line_of_action_mm"] - s_ref
+    a0 = -s_ref / case.base_radius_mm
+    a1 = a0 + f(a0) / case.base_radius_mm
+    for _ in range(20):
+        v1 = f(a1)
+        if abs(v1) < 1e-9:
+            break
+        a1 += v1 / case.base_radius_mm
+    return float(a1 - (target_s - s_ref) / case.base_radius_mm)
+
+
+def gear_mesh_contact_exact(case: GearMeshCase, target_s: float) -> dict:
+    """Contact point, outward normal and tangent on the driver's right flank for
+    contact at ``target_s`` on the line of action, from the involute equations."""
+    rb, rp = case.base_radius_mm, case.pitch_radius_mm
+    alpha = math.radians(case.pressure_angle_deg)
+    half_tooth = math.pi / (2.0 * case.teeth)
+    inv = lambda a: math.tan(a) - a
+
+    def flank(r: float) -> np.ndarray:
+        theta = 0.5 * math.pi - (half_tooth + inv(alpha) - inv(math.acos(rb / r)))
+        return np.array((r * math.cos(theta), r * math.sin(theta)))
+
+    r = math.sqrt(rb * rb + (rp * math.sin(alpha) + target_s) ** 2)
+    point = flank(r)
+    dr = 1e-5
+    tangent = flank(r + dr) - flank(r - dr)
+    tangent /= np.linalg.norm(tangent)                 # toward the tooth tip (increasing radius)
+    normal = np.array((tangent[1], -tangent[0]))
+    if normal[0] < 0:
+        normal = -normal
+    return {"point": point, "normal": normal, "tangent": tangent, "radius_mm": r, "line_of_action_mm": target_s}
+
+
+def build_gear_mesh_case(case: GearMeshCase, output_dir: Path) -> Path:
+    """Mesh and write a tooth-pair case with kinematically consistent loading.
+
+    The mating tooth is placed in conjugate contact (zero backlash) with the
+    contact at ``line_of_action_mm``. In the load step its rim is translated
+    rigidly by ``approach_mm`` along the line of action toward the driver, plus
+    a tangential slip ``slip_mm`` with the sign of the kinematic sliding for the
+    running sense (driver clockwise), ramped to zero at the pitch point. The
+    driver rim below the root circle is fixed.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    a1 = gear_mesh_angle_for(case, case.line_of_action_mm)
+    rot0, centre0 = gear_mesh_pose(case, a1)
+    final = gear_mesh_contact_exact(case, case.line_of_action_mm)
+    point, normal, tangent = final["point"], final["normal"], final["tangent"]
+    # Tangential slip of the mating flank relative to the driver for a rolling
+    # increment in the running sense (driver clockwise: a -> a - roll), from the
+    # conjugate kinematics: the mating material point at the contact moves from
+    # pose(a1 + h) to pose(a1). Its tangential displacement per unit angle is
+    # about 2 s (relative rotation about the pitch point) and reverses there.
+    h = 1e-5
+    rot_h, centre_h = gear_mesh_pose(case, a1 + h)
+    xi = rot_h.T @ (point - centre_h)
+    slip_rate = float(((rot0 @ xi + centre0) - point) @ tangent) / h
+    # One rigid translation of the mating gear: the approach along the line of
+    # action (toward the driver) plus a tangential slip with the sign of the
+    # kinematic sliding (reversing at the pitch point) and a magnitude that makes
+    # the contact slide, ramped to zero within slip_ramp_mm of the pitch point
+    # (pure rolling there).
+    ramp = min(1.0, abs(case.line_of_action_mm) / case.slip_ramp_mm) if case.slip_ramp_mm > 0 else 1.0
+    slip = float(np.sign(slip_rate)) * case.slip_mm * ramp
+    approach_vec = -case.approach_mm * normal + slip * tangent
+    gmsh.initialize()
+    try:
+        gmsh.option.setNumber("General.Terminal", 0)
+        gmsh.model.add("involute_gear_mesh")
+        driver_polygon = gear_tooth_polygon(case, flank_samples=case.flank_samples)
+        mating_polygon = driver_polygon @ rot0.T + centre0
+
+        def add_polygon(points: np.ndarray) -> tuple[int, list[int], list[int]]:
+            point_tags = [gmsh.model.occ.addPoint(float(x), float(y), 0.0) for x, y in points]
+            curve_tags = [
+                gmsh.model.occ.addLine(point_tags[i], point_tags[(i + 1) % len(point_tags)])
+                for i in range(len(point_tags))
+            ]
+            loop = gmsh.model.occ.addCurveLoop(curve_tags)
+            return gmsh.model.occ.addPlaneSurface([loop]), point_tags, curve_tags
+
+        driver_surface, driver_points, driver_curves = add_polygon(driver_polygon)
+        mating_surface, mating_points, mating_curves = add_polygon(mating_polygon)
+        gmsh.model.occ.synchronize()
+        gmsh.option.setNumber("Mesh.MeshSizeMin", case.mesh_size_mm * 0.50)
+        gmsh.option.setNumber("Mesh.MeshSizeMax", case.mesh_size_mm)
+        gmsh.option.setNumber("Mesh.ElementOrder", 1)
+        gmsh.model.mesh.setSize([(0, tag) for tag in driver_points + mating_points], case.mesh_size_mm * 0.70)
+        gmsh.model.mesh.generate(2)
+
+        node_tags, coordinates, _ = gmsh.model.mesh.getNodes()
+        coordinates = np.asarray(coordinates).reshape(-1, 3)
+        nodes = {int(tag): coord for tag, coord in zip(node_tags, coordinates)}
+        element_sets: dict[str, dict[int, np.ndarray]] = {}
+        for name, area in (("DRIVER", driver_surface), ("MATING", mating_surface)):
+            types, tag_blocks, node_blocks = gmsh.model.mesh.getElements(2, area)
+            elements: dict[int, np.ndarray] = {}
+            for element_type, tags, flat_nodes in zip(types, tag_blocks, node_blocks):
+                _, _, _, nodes_per_element, _, _ = gmsh.model.mesh.getElementProperties(element_type)
+                if nodes_per_element != 3:
+                    continue
+                shaped = np.asarray(flat_nodes, dtype=np.int64).reshape(-1, 3)
+                for row in shaped:
+                    a, b, c = (nodes[int(tag)][:2] for tag in row)
+                    if (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) < 0:
+                        row[1], row[2] = row[2], row[1]
+                elements.update({int(tag): row for tag, row in zip(tags, shaped)})
+            if not elements:
+                raise RuntimeError(f"no linear triangles generated for {name}")
+            element_sets[name] = elements
+
+        all_elements = {**element_sets["DRIVER"], **element_sets["MATING"]}
+        driver_faces = _surface_edges(all_elements, driver_curves)
+        mating_faces = _surface_edges(all_elements, mating_curves)
+        if not driver_faces or not mating_faces:
+            raise RuntimeError("failed to map contact surfaces")
+        driver_node_ids = sorted({int(v) for row in element_sets["DRIVER"].values() for v in row})
+        mating_node_ids = sorted({int(v) for row in element_sets["MATING"].values() for v in row})
+        root_limit = case.root_radius_mm + case.mesh_size_mm * 0.45
+        driver_root = [t for t in driver_node_ids if np.linalg.norm(nodes[t][:2]) <= root_limit]
+        mating_root = [t for t in mating_node_ids if np.linalg.norm(rot0.T @ (nodes[t][:2] - centre0)) <= root_limit]
+        if len(driver_root) < 3 or len(mating_root) < 3:
+            raise RuntimeError("gear-sector support set is unexpectedly small")
+
+        def ids_block(values: list[int]) -> str:
+            return "\n".join(", ".join(map(str, values[i : i + 16])) for i in range(0, len(values), 16))
+
+        # prescribed rigid translation of the mating rim (approach plus kinematic slip)
+        mating_bc = []
+        for t in mating_root:
+            u = approach_vec
+            mating_bc += [f"{t}, 1, 1, {u[0]:.12g}", f"{t}, 2, 2, {u[1]:.12g}"]
+
+        lines = ["*HEADING", "Involute tooth-pair contact, kinematically consistent loading"]
+        lines.append("*NODE")
+        lines.extend(f"{tag}, {xyz[0]:.10g}, {xyz[1]:.10g}, {xyz[2]:.10g}" for tag, xyz in sorted(nodes.items()))
+        for name, elements in element_sets.items():
+            lines.append(f"*ELEMENT, TYPE=CPE3, ELSET={name}")
+            lines.extend(f"{tag}, " + ", ".join(map(str, row)) for tag, row in sorted(elements.items()))
+        lines.extend(("*NSET, NSET=DRIVERROOT", ids_block(driver_root)))
+        lines.extend(("*NSET, NSET=MATINGROOT", ids_block(mating_root)))
+        lines.extend(("*NSET, NSET=DRIVERNODES", ids_block(driver_node_ids)))
+        lines.extend(("*NSET, NSET=MATINGNODES", ids_block(mating_node_ids)))
+        lines.append("*SURFACE, NAME=DRIVERSURF, TYPE=ELEMENT")
+        lines.extend(f"{element}, {face}" for element, face in driver_faces)
+        lines.append("*SURFACE, NAME=MATINGSURF, TYPE=ELEMENT")
+        lines.extend(f"{element}, {face}" for element, face in mating_faces)
+        lines.extend(
+            (
+                "*MATERIAL, NAME=STEEL",
+                "*ELASTIC",
+                f"{case.youngs_modulus_mpa:.10g}, {case.poisson_ratio:.10g}",
+                "*SOLID SECTION, ELSET=DRIVER, MATERIAL=STEEL",
+                "*SOLID SECTION, ELSET=MATING, MATERIAL=STEEL",
+                "*SURFACE INTERACTION, NAME=CONTACTINT",
+                "*SURFACE BEHAVIOR, PRESSURE-OVERCLOSURE=LINEAR",
+                f"{case.contact_penalty_factor * case.youngs_modulus_mpa:.10g}",
+                "*FRICTION",
+                f"{case.friction:.10g}, {0.5 * case.youngs_modulus_mpa:.10g}",
+                # No ADJUST: the conjugate placement already puts the flanks in point
+                # contact, and ADJUST would close the curvature gap x^2/(2R') over
+                # every slave node within its distance (about +-0.2 mm for 6 um),
+                # turning the Hertzian contact into a mesh-dependent flat punch.
+                "*CONTACT PAIR, INTERACTION=CONTACTINT, TYPE=SURFACE TO SURFACE",
+                "MATINGSURF, DRIVERSURF",
+                "*BOUNDARY",
+                "DRIVERROOT, 1, 2, 0.0",
+                "*STEP, NLGEOM",
+                "*STATIC",
+                "0.025, 1.0, 1e-07, 0.1",
+                "*BOUNDARY",
+                *mating_bc,
+                "*NODE FILE",
+                "U, RF",
+                "*EL FILE",
+                "S, E",
+                "*CONTACT FILE",
+                "CDIS, CSTR, CELS",
+                "*END STEP",
+            )
+        )
+        deck = output_dir / "case.inp"
+        deck.write_text("\n".join(lines) + "\n", encoding="ascii")
+        metadata = {
+            **asdict(case),
+            "model": "involute_tooth_pair_kinematic_loading",
+            "contact_point_mm": point.tolist(),
+            "contact_normal": normal.tolist(),
+            "contact_tangent": final["tangent"].tolist(),
+            "contact_radius_mm": final["radius_mm"],
+            "driver_angle_rad": a1,
+            "slip_per_rolling_angle_mm": slip_rate,
+            "imposed_slip_toward_tip_mm": slip,
+            "approach_vector_mm": approach_vec.tolist(),
+            "mating_rotation": rot0.tolist(),
+            "mating_center_mm": centre0.tolist(),
+
+            "nodes": len(nodes),
+            "elements": len(all_elements),
+            "driver_root_nodes": len(driver_root),
+            "mating_root_nodes": len(mating_root),
+        }
+        (output_dir / "case.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+        driver_element_ids = np.asarray(sorted(element_sets["DRIVER"]), dtype=np.int64)
+        np.savez_compressed(
+            output_dir / "mesh_data.npz",
+            node_ids=np.asarray(sorted(nodes), dtype=np.int64),
+            coordinates=np.stack([nodes[tag] for tag in sorted(nodes)]),
+            tooth_node_ids=np.asarray(driver_node_ids, dtype=np.int64),
+            driver_node_ids=np.asarray(driver_node_ids, dtype=np.int64),
+            mating_node_ids=np.asarray(mating_node_ids, dtype=np.int64),
+            driver_element_ids=driver_element_ids,
+            driver_connectivity=np.stack([element_sets["DRIVER"][int(tag)] for tag in driver_element_ids]),
+            mating_rotation=rot0,
+            mating_center=centre0,
+        )
+        gmsh.write(str(output_dir / "case.msh"))
+        return deck
+    finally:
+        gmsh.finalize()

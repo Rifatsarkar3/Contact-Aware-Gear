@@ -130,11 +130,28 @@ def main() -> None:
     t_single_one = timed(lambda: single(one), warmup=10, iters=50)
     t_single_batch = timed(lambda: single(batch), warmup=3, iters=10)
     t_ens_batch = timed(lambda: [m(batch) for m in models], warmup=2, iters=3)
+    # one design query at a time, all ten members: the latency a user waits for
+    t_ens_one = timed(lambda: [m(one) for m in models], warmup=5, iters=20)
+    # the same unbatched query for every held-out case, to show the spread
+    per_case = []
+    with torch.no_grad():
+        for k in range(n):
+            q = batch[k:k + 1]
+            for _ in range(2):
+                [m(q) for m in models]
+            reps = []
+            for _ in range(REPEATS):
+                t0 = time.perf_counter()
+                [m(q) for m in models]
+                reps.append(time.perf_counter() - t0)
+            per_case.append(1e3 * statistics.median(reps))
 
     solve = float(np.median(secs))
     per = {"single_network_one_case_ms": 1e3 * t_single_one,
            "single_network_batched_ms_per_case": 1e3 * t_single_batch / n,
-           "ten_member_ensemble_batched_ms_per_case": 1e3 * t_ens_batch / n}
+           "ten_member_ensemble_batched_ms_per_case": 1e3 * t_ens_batch / n,
+           "ten_member_ensemble_one_case_ms": 1e3 * t_ens_one,
+           "ten_member_ensemble_one_case_ms_range_over_test_cases": [min(per_case), max(per_case)]}
     result = {
         "hardware": {"device": "cpu", "torch_threads": torch.get_num_threads(),
                      "processor": platform.processor(), "torch": torch.__version__},
@@ -146,7 +163,8 @@ def main() -> None:
         "speedup_vs_median_solve": {
             "single_network_one_case": solve / (per["single_network_one_case_ms"] / 1e3),
             "single_network_batched": solve / (per["single_network_batched_ms_per_case"] / 1e3),
-            "ten_member_ensemble_batched": solve / (per["ten_member_ensemble_batched_ms_per_case"] / 1e3)},
+            "ten_member_ensemble_batched": solve / (per["ten_member_ensemble_batched_ms_per_case"] / 1e3),
+            "ten_member_ensemble_one_case": solve / (per["ten_member_ensemble_one_case_ms"] / 1e3)},
         "timing_method": f"median of {REPEATS} repeated blocks after warm-up",
     }
     (OUT / "inference_benchmark.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
@@ -154,7 +172,7 @@ def main() -> None:
     print(f"FEM solve  n={len(secs)}  median {solve:.1f}s  mean {secs.mean():.1f}s  "
           f"p90 {np.percentile(secs, 90):.1f}s")
     for k, v in per.items():
-        print(f"{k:42s} {v:8.2f} ms")
+        print(f"{k:42s} {v} ms" if isinstance(v, list) else f"{k:42s} {v:8.2f} ms")
     for k, v in result["speedup_vs_median_solve"].items():
         print(f"speedup {k:32s} {v:10,.0f}x")
     print(f"threads={torch.get_num_threads()}  wrote {(OUT / 'inference_benchmark.json').relative_to(ROOT)}")

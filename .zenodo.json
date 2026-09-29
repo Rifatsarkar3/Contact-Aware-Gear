@@ -1,10 +1,10 @@
 {
   "upload_type": "software",
-  "title": "Contact-Aware Gear: neural-operator surrogate for transient gear-tooth contact stress (code, datasets, trained models and result logs)",
-  "description": "<p>Code, processed finite-element datasets, trained model checkpoints and complete per-seed result logs for a Fourier Neural Operator surrogate of the transient stress field in a meshing gear tooth.</p><p>The surrogate is trained on 144 converged nonlinear frictional contact cases under a leakage-safe, trajectory-grouped protocol. On held-out trajectories a ten-member seed ensemble with void masking reaches R2 = 0.998 and 4.8% relative L2 error. Re-solving cases at a finer mesh places the labels' own discretization uncertainty at 4.4% in the same metric, so the surrogate error is 1.09 times that floor. The ensemble predicts a case in 27.8 ms on CPU against a median 25.3 s CalculiX solve. The best configuration predicts peak root-fillet stress to 4.1%, under-predicting it by 2.6% on average.</p><p>This deposit contains the <code>gearstress</code> package; 49 dataset-generation, training, study and analysis scripts, including the three that reproduce the headline results; the test suite; 12 model-ready HDF5 datasets; the 20 trained checkpoints behind the headline figures; and the per-seed result logs and study summaries. The remaining checkpoints (about 3.4 GB) and raw CalculiX output (about 10 GB) are available on reasonable request.</p><p>Source code is released under the MIT License; datasets, result logs and trained checkpoints under CC BY 4.0.</p>",
+  "title": "Contact-Aware Gear: neural-operator surrogate for spur-gear tooth stress under quasi-static frictional contact (code, datasets, trained models and result logs)",
+  "description": "<p>Code, processed finite-element datasets, trained model checkpoints and result logs for a ten-member Fourier Neural Operator surrogate of the in-plane stress field in a spur-gear tooth under quasi-static frictional contact.</p><p>Version 3.0.0 uses a corrected gear-mesh finite-element model: conjugate tooth placement, a normal approach along the line of action with a tangential slip in the direction of the kinematic sliding, and no initial contact-node adjustment. Trained on 432 CalculiX solutions and tested on three held-out loading trajectories, the ensemble reproduces the finite-element field with a relative L2 error of 1.4% (R2 = 0.9999) and the peak root tensile stress to 1.0%, and follows the change of the field with the friction coefficient case by case. Refining every mesh length scale 1.5-fold changes the labels by 9.0% and leaves the surrogate 8.9% from the refined solution. The finite-element contact agrees with Hertz theory to within 9%. One prediction takes 76 ms on a CPU against 27.1 s for a CalculiX solve.</p><p>This deposit contains the <code>gearstress</code> package; 61 dataset-generation, training, study, analysis and figure scripts; the test suite; the model-ready HDF5 datasets, including the corrected datasets v4 and v4f and the earlier datasets v1 to v3 used for method comparisons; every gear-mesh solution on the prediction grid with its refined references; 40 trained checkpoints, 20 behind the headline results and 20 on the earlier dataset v2; and the per-seed result logs and study summaries. The remaining checkpoints of the earlier datasets and the raw CalculiX output are available on reasonable request.</p><p>Source code is released under the MIT License; datasets, result logs and trained checkpoints under CC BY 4.0.</p>",
   "license": "MIT",
   "access_right": "open",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "language": "eng",
   "keywords": [
     "neural operator",
@@ -13,7 +13,10 @@
     "gear contact stress",
     "finite element analysis",
     "deep ensembles",
-    "discretization uncertainty"
+    "discretization uncertainty",
+    "frictional contact",
+    "spur gear",
+    "Hertzian contact"
   ],
   "related_identifiers": [
     {
