@@ -47,7 +47,7 @@ def solve(job):
             raise RuntimeError(f"solve failed: case {idx}, {factor}E")
         meta = json.loads((d / "case.json").read_text(encoding="utf-8"))
         m = contact_metrics(deck, meta, case)
-        g = fem.project_case_to_grid(d, 64)
+        g = fem.project_case_to_grid(d, 64, material_mask="elements")
     return idx, factor, m, g, meta["contact_point_mm"]
 
 

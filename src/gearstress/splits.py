@@ -90,3 +90,47 @@ def geometry_holdout_split(
     train = shuffled[n_val:]
     return GroupSplit(train=train, val=val, test=test)
 
+
+
+def grouped_trajectory_fold_split(
+    trajectory_ids: np.ndarray,
+    fold: int,
+    train_fraction: float = 0.625,
+    val_fraction: float = 0.1875,
+    reference_seed: int = 42,
+    seed: int = 2026,
+) -> GroupSplit:
+    """Further trajectory-grouped partitions that test every trajectory at least once.
+
+    Fold 0 is the reference partition ``grouped_trajectory_split(..., seed=reference_seed)``.
+    The trajectories not tested there are shuffled once with ``seed`` and cut into
+    test sets of the reference size; the last fold is completed with trajectories
+    drawn from the other folds' test sets. Each fold draws its own validation
+    trajectories from the remaining ones, and everything else is training data,
+    so the partition sizes match the reference partition.
+    """
+    ids = np.asarray(trajectory_ids)
+    reference = grouped_trajectory_split(ids, train_fraction, val_fraction, seed=reference_seed)
+    if fold == 0:
+        return reference
+    groups = np.unique(ids)
+    ref_test = sorted(set(ids[reference.test].tolist()))
+    ref_val = sorted(set(ids[reference.val].tolist()))
+    n_test, n_val = len(ref_test), len(ref_val)
+    rng = np.random.default_rng(seed)
+    untested = rng.permutation([g for g in groups if g not in ref_test])
+    n_folds = -(-len(untested) // n_test)
+    if not 1 <= fold <= n_folds:
+        raise ValueError(f"fold must be in 0..{n_folds}")
+    test = list(untested[(fold - 1) * n_test: fold * n_test])
+    if len(test) < n_test:                         # complete the last fold from the other folds' test sets
+        others = [g for g in untested if g not in test]
+        test += list(rng.permutation(others)[: n_test - len(test)])
+    fold_rng = np.random.default_rng(seed + fold)
+    val = list(fold_rng.permutation([g for g in groups if g not in test])[:n_val])
+    train = [g for g in groups if g not in test and g not in val]
+    return GroupSplit(
+        train=np.flatnonzero(np.isin(ids, train)),
+        val=np.flatnonzero(np.isin(ids, val)),
+        test=np.flatnonzero(np.isin(ids, test)),
+    )

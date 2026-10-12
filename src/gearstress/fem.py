@@ -1055,25 +1055,8 @@ def parse_final_nodal_force(frd_path: Path) -> dict[int, np.ndarray]:
     return parse_nodal_force_history(frd_path)[-1]
 
 
-def project_case_to_grid(case_dir: Path, grid_size: int = 64) -> dict[str, np.ndarray]:
-    """Interpolate tooth nodal stresses to a fixed grid for operator learning.
-
-    The grid window is derived from the case's own geometry (read from
-    ``case.json``), not hardcoded: it reproduces the historical fixed window
-    exactly at the default geometry (module=2.0mm, teeth=24,
-    root_clearance_module=0.25 -> root_radius=21.5, outer_radius=26 ->
-    x in [-3.5, 3.5], y in [19.5, 26.2]), and scales/re-centers for any other
-    geometry so the tooth (including its root fillet) stays framed.
-    """
-    mesh = np.load(case_dir / "mesh_data.npz")
-    node_ids = mesh["node_ids"]
-    coordinates = mesh["coordinates"]
-    tooth_ids = mesh["tooth_node_ids"]
-    id_to_index = {int(tag): i for i, tag in enumerate(node_ids)}
-    xy = np.stack([coordinates[id_to_index[int(tag)], :2] for tag in tooth_ids])
-    stress_map = parse_final_nodal_stress(case_dir / "case.frd")
-    stress = np.stack([stress_map[int(tag)] for tag in tooth_ids])[:, [0, 1, 3]]
-    metadata = json.loads((case_dir / "case.json").read_text(encoding="utf-8"))
+def grid_window(metadata: dict, grid_size: int = 64) -> tuple[np.ndarray, np.ndarray]:
+    """Coordinates (xx, yy) of the prediction grid for a case's geometry."""
     module_mm = float(metadata["module_mm"])
     teeth = float(metadata["teeth"])
     root_clearance_module = float(metadata["root_clearance_module"])
@@ -1088,8 +1071,63 @@ def project_case_to_grid(case_dir: Path, grid_size: int = 64) -> dict[str, np.nd
         root_radius_mm - margin_below_mm, outer_radius_mm + margin_above_mm, grid_size, dtype=np.float32
     )
     yy, xx = np.meshgrid(y_axis, x_axis, indexing="ij")
+    return xx, yy
+
+
+def element_material_mask(case_dir: Path, xx: np.ndarray, yy: np.ndarray) -> np.ndarray:
+    """True where a grid point lies inside a driver element of the case mesh.
+
+    Uses the driver connectivity stored in ``mesh_data.npz`` (point-in-triangle
+    test on the finite-element mesh), so grid points in the concave notches
+    beside the tooth flanks, which the convex hull of the nodal cloud covers but
+    the material does not, are excluded.
+    """
+    from matplotlib.tri import Triangulation
+
+    with np.load(case_dir / "mesh_data.npz") as mesh:
+        node_ids = mesh["node_ids"]
+        coordinates = mesh["coordinates"][:, :2]
+        connectivity = mesh["driver_connectivity"]
+    index = {int(tag): i for i, tag in enumerate(node_ids)}
+    triangles = np.array([[index[int(tag)] for tag in element] for element in connectivity])
+    finder = Triangulation(coordinates[:, 0], coordinates[:, 1], triangles).get_trifinder()
+    return finder(xx, yy) >= 0
+
+
+def project_case_to_grid(case_dir: Path, grid_size: int = 64, material_mask: str = "hull") -> dict[str, np.ndarray]:
+    """Interpolate tooth nodal stresses to a fixed grid for operator learning.
+
+    The grid window is derived from the case's own geometry (read from
+    ``case.json``), not hardcoded: it reproduces the historical fixed window
+    exactly at the default geometry (module=2.0mm, teeth=24,
+    root_clearance_module=0.25 -> root_radius=21.5, outer_radius=26 ->
+    x in [-3.5, 3.5], y in [19.5, 26.2]), and scales/re-centers for any other
+    geometry so the tooth (including its root fillet) stays framed.
+
+    Nodal stresses (CalculiX extrapolates the element stresses to the nodes and
+    averages them over the elements sharing a node) are interpolated linearly
+    over a Delaunay triangulation of the tooth nodes. ``material_mask`` selects
+    the grid points kept: ``"hull"`` (the historical behavior, used for the
+    datasets v1 to v3) keeps every point inside the convex hull of the nodes,
+    which also covers the notches beside the lower flanks; ``"elements"`` keeps
+    only points inside a finite-element of the tooth and sets the rest to zero.
+    """
+    mesh = np.load(case_dir / "mesh_data.npz")
+    node_ids = mesh["node_ids"]
+    coordinates = mesh["coordinates"]
+    tooth_ids = mesh["tooth_node_ids"]
+    id_to_index = {int(tag): i for i, tag in enumerate(node_ids)}
+    xy = np.stack([coordinates[id_to_index[int(tag)], :2] for tag in tooth_ids])
+    stress_map = parse_final_nodal_stress(case_dir / "case.frd")
+    stress = np.stack([stress_map[int(tag)] for tag in tooth_ids])[:, [0, 1, 3]]
+    metadata = json.loads((case_dir / "case.json").read_text(encoding="utf-8"))
+    xx, yy = grid_window(metadata, grid_size)
     query = np.column_stack((xx.ravel(), yy.ravel()))
     mask = griddata(xy, np.ones(len(xy)), query, method="linear", fill_value=0.0).reshape(grid_size, grid_size)
+    if material_mask == "elements":
+        mask = element_material_mask(case_dir, xx, yy).astype(np.float64)
+    elif material_mask != "hull":
+        raise ValueError(f"unknown material_mask {material_mask!r}")
     fields = []
     for component in range(3):
         field = griddata(xy, stress[:, component], query, method="linear", fill_value=0.0)
@@ -1451,3 +1489,22 @@ def build_gear_mesh_case(case: GearMeshCase, output_dir: Path) -> Path:
         return deck
     finally:
         gmsh.finalize()
+
+
+def gear_mesh_material_mask(grid_size: int = 64, case: GearMeshCase | None = None) -> np.ndarray:
+    """Material mask of the gear-mesh driving tooth on the prediction grid.
+
+    The driving tooth and its rim are meshed identically in every case (and the
+    refined meshes cover the same grid points), so one mask from a default deck
+    serves all cases. Built from the element connectivity, see
+    ``element_material_mask``.
+    """
+    import tempfile
+
+    case = case or GearMeshCase()
+    with tempfile.TemporaryDirectory(prefix="gm_mask_") as work:
+        case_dir = Path(work) / "case"
+        build_gear_mesh_case(case, case_dir)
+        metadata = json.loads((case_dir / "case.json").read_text(encoding="utf-8"))
+        xx, yy = grid_window(metadata, grid_size)
+        return element_material_mask(case_dir, xx, yy)

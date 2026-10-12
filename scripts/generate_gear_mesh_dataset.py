@@ -132,7 +132,7 @@ def solve(job, rows, ccx):
         if res.returncode != 0:
             raise RuntimeError(f"solve failed: {job}")
         meta = json.loads((d / "case.json").read_text(encoding="utf-8"))
-        g = fem.project_case_to_grid(d, 64)
+        g = fem.project_case_to_grid(d, 64, material_mask="elements")
         log = (d / "solver.log").read_text(encoding="utf-8", errors="ignore") if (d / "solver.log").exists() else ""
         secs = float(log.rsplit("Total CalculiX Time:", 1)[1].split()[0]) if "Total CalculiX Time:" in log else -1.0
         row = {"job": list(job), **r, "friction": case.friction, "mesh_mm": case.mesh_size_mm,
@@ -146,13 +146,17 @@ def assemble(rows, traj, jobs):
     attrs = dict(v2.attrs)
     v2.close()
     variant_of = {None: 0, MUS[0]: 1, MUS[1]: 2}
+    # Grid points inside the finite elements of the driving tooth; the stored grid
+    # solutions were projected with the convex-hull mask, which also covers the
+    # notches beside the lower flanks, so they are re-masked here.
+    material = fem.gear_mesh_material_mask(64).astype(np.float32)
     xs, ys, cs, ts, vs, meta_rows = [], [], [], [], [], []
     for mu in (None, *MUS):
         for i in range(len(rows)):
             name = name_of("base", i, mu)
             g = np.load(SOLVED / f"{name}.npz")
             m = json.loads((SOLVED / f"{name}.json").read_text(encoding="utf-8"))
-            mask = g["mask"]
+            mask = material
             x_axis, y_axis = g["x"][0], g["y"][:, 0]
             xx, yy = np.meshgrid(x_axis, y_axis)
             x_norm = (xx - xx.mean()) / max(float(np.ptp(xx)), 1e-6)
@@ -164,7 +168,7 @@ def assemble(rows, traj, jobs):
             feat = np.concatenate((mask[None], x_norm[None], y_norm[None],
                                    np.broadcast_to(scal[:, None, None], (4, 64, 64)), cmap[None])).astype(np.float32)
             xs.append(feat)
-            ys.append(g["stress"].astype(np.float32))
+            ys.append((g["stress"] * material[None]).astype(np.float32))
             cs.append([m["approach_mm"], m["friction"], m["youngs_modulus_mpa"], m["line_of_action_mm"],
                        m["directed_phase"], m["normal_force_N_per_mm"]])
             ts.append(int(traj[i]))
@@ -175,7 +179,8 @@ def assemble(rows, traj, jobs):
               "grid_dx_mm": attrs["grid_dx_mm"], "grid_dy_mm": attrs["grid_dy_mm"], "mesh_size_mm": 0.12, "seed": 7,
               "fem_model": "two deformable involute tooth sectors, plane strain, frictional contact; conjugate placement; "
                            "load = approach along the line of action + tangential slip with the kinematic sign",
-              "input_channels": "mask, x, y, approach/0.010 mm, mu/0.10, E/210 GPa, s/single-contact half length, contact map"}
+              "input_channels": "mask, x, y, approach/0.010 mm, mu/0.10, E/210 GPa, s/single-contact half length, contact map",
+              "material_mask": "grid points inside the finite elements of the driving tooth; targets are zero elsewhere"}
     for path, sel in ((OUT4, vs == 0), (OUT4F, np.ones(len(vs), bool))):
         with h5py.File(path, "w") as h:
             h.create_dataset("inputs", data=xs[sel], compression="gzip", shuffle=True)

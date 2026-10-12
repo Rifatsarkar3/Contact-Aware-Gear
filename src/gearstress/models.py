@@ -161,3 +161,65 @@ class DeepONet(nn.Module):
         out = out + self.bias.view(1, self.out_channels, 1)
         return out.reshape(batch, self.out_channels, height, width)
 
+
+class PODDeepONet(nn.Module):
+    """DeepONet whose trunk is fixed to the POD modes of the training fields (POD-DeepONet, Lu et al. 2022).
+
+    The branch is an MLP over the four scalar input channels (indices 3-6: approach, friction
+    coefficient, elastic modulus and contact position, each uniform over the grid), standardized
+    with training statistics. For one gear geometry the other input channels (mask, coordinates and
+    the analytically placed contact map) follow from these four, so the model sees the same
+    information as the others. The branch returns ``rank`` coefficients in units of each mode's
+    standard deviation over the training fields; the prediction is the training mean field plus
+    the coefficient-weighted modes. The basis and the standardization are buffers set by
+    ``fit_basis`` on the training cases, so a saved state dict restores them.
+    """
+
+    SCALARS = slice(3, 7)
+
+    def __init__(self, rank: int = 32, width: int = 64, out_channels: int = 3, height: int = 64, width_px: int = 64):
+        super().__init__()
+        self.field_shape = (out_channels, height, width_px)
+        n = out_channels * height * width_px
+        self.branch = nn.Sequential(
+            nn.Linear(4, width),
+            nn.GELU(),
+            nn.Linear(width, width),
+            nn.GELU(),
+            nn.Linear(width, width),
+            nn.GELU(),
+            nn.Linear(width, rank),
+        )
+        self.register_buffer("scalar_mean", torch.zeros(4))
+        self.register_buffer("scalar_std", torch.ones(4))
+        self.register_buffer("field_mean", torch.zeros(n))
+        self.register_buffer("modes", torch.zeros(rank, n))
+        self.register_buffer("mode_std", torch.ones(rank))
+
+    @torch.no_grad()
+    def fit_basis(self, inputs, targets) -> "PODDeepONet":
+        """Set the scalar standardization and the POD basis from the training inputs and (scaled) targets."""
+        import numpy as np
+
+        rank = self.modes.shape[0]
+        scal = np.asarray(inputs, dtype=np.float64)[:, self.SCALARS].mean(axis=(2, 3))
+        std = scal.std(0)
+        std[std < 1e-12] = 1.0
+        fields = np.asarray(targets, dtype=np.float64).reshape(len(targets), -1)
+        if rank > len(fields) - 1:
+            raise ValueError(f"POD rank {rank} needs at least {rank + 1} training cases, got {len(fields)}")
+        mean = fields.mean(0)
+        _, sv, vt = np.linalg.svd(fields - mean, full_matrices=False)
+        self.scalar_mean.copy_(torch.from_numpy(scal.mean(0)))
+        self.scalar_std.copy_(torch.from_numpy(std))
+        self.field_mean.copy_(torch.from_numpy(mean))
+        self.modes.copy_(torch.from_numpy(vt[:rank]))
+        self.mode_std.copy_(torch.from_numpy(sv[:rank] / np.sqrt(len(fields))))
+        return self
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        z = (x[:, self.SCALARS].mean(dim=(2, 3)) - self.scalar_mean) / self.scalar_std
+        coeff = self.branch(z) * self.mode_std
+        out = self.field_mean + coeff @ self.modes
+        return out.reshape(x.shape[0], *self.field_shape)
+

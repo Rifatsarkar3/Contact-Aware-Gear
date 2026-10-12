@@ -28,8 +28,8 @@ from gearstress.inventions import (  # noqa: E402
     ResidualCompatibleRepairFNO,
 )
 from gearstress.losses import combined_loss, equilibrium_residual, hotspot_mae, relative_l2  # noqa: E402
-from gearstress.models import DeepONet, FNO2d, UNetSmall  # noqa: E402
-from gearstress.splits import geometry_holdout_split, grouped_trajectory_split  # noqa: E402
+from gearstress.models import DeepONet, FNO2d, PODDeepONet, UNetSmall  # noqa: E402
+from gearstress.splits import geometry_holdout_split, grouped_trajectory_fold_split, grouped_trajectory_split  # noqa: E402
 
 
 def seed_all(seed: int) -> None:
@@ -79,6 +79,7 @@ def main() -> None:
             "fno_physics",
             "unet",
             "deeponet",
+            "pod_deeponet",
             "aee_fno",
             "ccp_fno",
             "rcr_fno",
@@ -130,6 +131,15 @@ def main() -> None:
         default=None,
         help="overrides the train/val/test trajectory split seed only (default: the config seed); use this to test whether a finding is specific to one partition of the data, not model-init seed",
     )
+    parser.add_argument(
+        "--fold",
+        type=int,
+        default=None,
+        help="further trajectory-grouped partition (1..5) from gearstress.splits.grouped_trajectory_fold_split; "
+             "fold 0 is the reference partition",
+    )
+    parser.add_argument("--physics-weight", type=float, default=None,
+                        help="fno_physics: overrides the equilibrium-penalty weight of configs/smoke.yaml")
     args = parser.parse_args()
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
     epochs = args.epochs if args.epochs is not None else int(cfg["epochs"])
@@ -168,6 +178,14 @@ def main() -> None:
             holdout_high=args.holdout_high,
             val_fraction=float(cfg["val_fraction"]),
             seed=split_seed,
+        )
+    elif args.fold is not None:
+        split = grouped_trajectory_fold_split(
+            trajectory_ids,
+            args.fold,
+            train_fraction=float(cfg["train_fraction"]),
+            val_fraction=float(cfg["val_fraction"]),
+            reference_seed=split_seed,
         )
     else:
         split = grouped_trajectory_split(
@@ -305,6 +323,9 @@ def main() -> None:
         )
     elif args.model == "unet":
         model = UNetSmall(width=model_cfg["width"])
+    elif args.model == "pod_deeponet":
+        # the POD basis and the input standardization come from the training trajectories only
+        model = PODDeepONet(rank=args.basis_dim, width=model_cfg["width"]).fit_basis(inputs[split.train], targets[split.train])
     else:
         model = DeepONet(width=model_cfg["width"], basis_dim=args.basis_dim)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -322,7 +343,8 @@ def main() -> None:
             prediction = model(batch_inputs)
             physics_weight = 0.0
             if args.model == "fno_physics":
-                base_physics_weight = float(cfg["loss"]["physics_weight"])
+                base_physics_weight = (args.physics_weight if args.physics_weight is not None
+                                       else float(cfg["loss"]["physics_weight"]))
                 if args.physics_warmup_epochs:
                     ramp = max(0.0, (epoch - args.physics_warmup_epochs) / (epochs - args.physics_warmup_epochs))
                     physics_weight = base_physics_weight * ramp
@@ -361,6 +383,11 @@ def main() -> None:
         "physics_warmup_epochs": args.physics_warmup_epochs,
         "learning_rate": learning_rate,
         "split_samples": {"train": len(split.train), "val": len(split.val), "test": len(split.test)},
+        "fold": args.fold,
+        "split_trajectories": {k: sorted(int(t) for t in set(trajectory_ids[getattr(split, k)].tolist()))
+                               for k in ("train", "val", "test")},
+        "physics_weight": (args.physics_weight if args.physics_weight is not None
+                           else float(cfg["loss"]["physics_weight"])) if args.model == "fno_physics" else 0.0,
         "target_scale_mpa_or_native": target_scale,
         "grid_spacing_mm": {"dx": grid_dx_mm, "dy": grid_dy_mm},
         "model_architecture": {
@@ -376,6 +403,8 @@ def main() -> None:
     if isinstance(model, ResidualCompatibleRepairFNO):
         result["repair_fraction"] = model.repair_fraction
     run_name = args.model
+    if args.model == "fno_physics" and args.physics_weight is not None:
+        run_name = f"fno_physics_pw{args.physics_weight:g}"
     if args.model == "fno_physics" and args.physics_warmup_epochs:
         run_name = f"fno_physics_warmup{args.physics_warmup_epochs}"
     if args.learning_rate is not None:
@@ -389,12 +418,14 @@ def main() -> None:
         )
     if args.model in ("ccm_fno", "hgm_fno", "dwm_fno"):
         run_name = f"{run_name}_lw{args.local_width}_lwin{args.local_window:g}_lsz{args.local_size}"
-    if args.model == "deeponet":
+    if args.model in ("deeponet", "pod_deeponet"):
         run_name = f"{run_name}_bd{args.basis_dim}"
     if args.split_scheme == "geometry_holdout":
         run_name = f"{run_name}_geomholdout{args.holdout_low:g}-{args.holdout_high:g}"
     if args.split_seed is not None:
         run_name = f"{run_name}_splitseed{split_seed}"
+    if args.fold is not None:
+        run_name = f"{run_name}_fold{args.fold}"
     run_name = f"{run_name}{run_suffix}"
     out_dir = ROOT / "outputs" / "smoke" / args.data.stem / run_name
     out_dir.mkdir(parents=True, exist_ok=True)

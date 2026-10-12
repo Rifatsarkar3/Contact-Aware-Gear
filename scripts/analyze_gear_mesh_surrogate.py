@@ -38,6 +38,7 @@ from gearstress.splits import grouped_trajectory_split  # noqa: E402
 
 V4F = ROOT / "data" / "processed" / "gear_mesh_quasistatic_v4f.h5"
 SOLVED = ROOT / "outputs" / "gear_mesh_v4_dataset"
+FE_EXT = ROOT / "outputs" / "extended_study" / "fe"
 CONTACT = ROOT / "outputs" / "surrogate" / "gear_mesh_v4_contact.json"
 OUT = ROOT / "outputs" / "surrogate" / "gear_mesh_v4_results.json"
 DS4, DS4F = "gear_mesh_quasistatic_v4", "gear_mesh_quasistatic_v4f"
@@ -91,13 +92,16 @@ def main() -> None:
     for i in test0:
         cx, cy = json.loads((SOLVED / f"base_{i:03d}_own.json").read_text(encoding="utf-8"))["contact_point_mm"]
         far.append((x[i, 0] > 0.5) & (np.hypot(gx - cx, gy - cy) > NEAR_MM))
+    # references on the material points of the labels (the stored refined grids carry the convex-hull mask)
+    m4 = (mats > 0.5)[:, None]
     refs = {"labels": np.stack([y[i] for i in test0]),
-            "fine": np.stack([np.load(SOLVED / f"fine_{i:03d}_own.npz")["stress"] for i in test0]),
-            "fineflank": np.stack([np.load(SOLVED / f"fineflank_{i:03d}_own.npz")["stress"] for i in test0])}
-    out = {"test_indices": test0, "n0": n0,
-           "masks_identical": {k: int(sum(np.array_equal(np.load(SOLVED / f"{k}_{i:03d}_own.npz")["mask"] > 0.5,
-                                                          x[i, 0] > 0.5) for i in test0)) for k in ("fine", "fineflank")}}
-    for k in ("fine", "fineflank"):
+            "fine": np.stack([np.load(SOLVED / f"fine_{i:03d}_own.npz")["stress"] for i in test0]) * m4,
+            "fineflank": np.stack([np.load(SOLVED / f"fineflank_{i:03d}_own.npz")["stress"] for i in test0]) * m4}
+    l3 = [FE_EXT / f"L3_{i:03d}_own.npz" for i in test0]
+    if all(f.exists() for f in l3):                 # 0.06 mm elements, 160-vertex flank (run_fe_checks.py)
+        refs["L3"] = np.stack([np.load(f)["stress"] for f in l3]) * m4
+    out = {"test_indices": test0, "n0": n0, "references": [k for k in refs if k != "labels"]}
+    for k in [k for k in refs if k != "labels"]:
         out[f"labels_vs_{k}"] = summ([rel(refs["labels"][j], refs[k][j]) for j in range(len(test0))])
         out[f"labels_vs_{k}_body"] = summ([rel_masked(refs["labels"][j], refs[k][j], far[j]) for j in range(len(test0))])
         # share of the squared label-reference difference within NEAR_MM of the contact point
@@ -156,9 +160,12 @@ def main() -> None:
                        "calibrated": {"mean_abs": float(np.mean(np.abs(cal))), "mean_signed": float(cal.mean()),
                                       "worst_under": float(cal.min()), "n_under": int((cal < 0).sum())},
                        "truth_range_mpa": [float(tr.min()), float(tr.max())]}
-        for k in ("fine", "fineflank"):
+        for k in [k for k in refs if k != "labels"]:
             rr = root_peak(refs[k], mats)
-            res["root"][f"raw_vs_{k}_mean_abs"] = float(np.mean(np.abs((pe - rr) / rr)))
+            e = (pe - rr) / rr
+            res["root"][f"raw_vs_{k}_mean_abs"] = float(np.mean(np.abs(e)))
+            res["root"][f"raw_vs_{k}"] = {"mean_abs": float(np.mean(np.abs(e))), "mean_signed": float(e.mean()),
+                                         "worst_under": float(e.min()), "n_under": int((e < 0).sum())}
         # friction response
         pl, ph = pred(lo).mean(0), pred(hi).mean(0)
         sf_field = [rel(ph[j], pl[j]) for j in range(len(test0))]
@@ -179,7 +186,7 @@ def main() -> None:
               f"{100 * res['root']['calibrated']['mean_abs']:.2f}%; friction: field {100 * res['friction']['field_change']['mean']:.1f}% "
               f"sign {res['friction']['sign_agreement']}/27 corr {res['friction']['root_change_corr']:.2f} MAE "
               f"{100 * res['friction']['root_change_mae_pp']:.1f}pp; variants err {res['friction']['err_variants_vs_labels']['mean']:.4f}")
-    for k in ("fine", "fineflank"):
+    for k in [k for k in refs if k != "labels"]:
         print(f"labels vs {k}: {out[f'labels_vs_{k}']['mean']:.4f} ({out[f'labels_vs_{k}']['min']:.4f}-"
               f"{out[f'labels_vs_{k}']['max']:.4f}); body {out[f'labels_vs_{k}_body']['mean']:.4f}; root "
               f"{100 * out[f'root_labels_vs_{k}']['abs']['mean']:.2f}%")
@@ -221,6 +228,17 @@ def main() -> None:
                                       if abs(r["line_of_action_mm"]) <= ramp],
         "solve_seconds": summ([r["solve_seconds"] for r in own]),
     }
+    allc = [r for r in rows if r["job"][0] == "base"]
+    alls = [r for r in allc if abs(r["line_of_action_mm"]) > ramp]
+    out["contact_v4f"] = {"n_cases": len(allc),
+                          "normal_force_N_per_mm": summ([r["normal_force_N_per_mm"] for r in allc]),
+                          "hertz_p0_mpa": summ([r["hertz_peak_pressure_mpa"] for r in allc]),
+                          "fe_over_hertz": summ([r["fe_peak_pressure_mpa"] / r["hertz_peak_pressure_mpa"] for r in allc]),
+                          "abs_Ft_over_Fn_over_mu": summ([abs(r["tangential_over_normal"]) / r["friction"] for r in alls]),
+                          "shear_over_mu_pressure_min": summ([r["shear_over_mu_pressure_min"] for r in alls]),
+                          "friction_sign_matches_s": int(sum(np.sign(r["tangential_force_toward_tip_N_per_mm"]) ==
+                                                             np.sign(r["line_of_action_mm"]) for r in alls)),
+                          "n_sliding_cases": len(alls)}
     dF = [by[("base", i, 0.12)]["normal_force_N_per_mm"] / by[("base", i, 0.04)]["normal_force_N_per_mm"] - 1 for i in test0]
     out["contact"]["normal_force_change_mu004_to_012"] = summ(dF)
     out["contact"]["normal_force_change_refined"] = summ(
