@@ -1508,3 +1508,346 @@ def gear_mesh_material_mask(grid_size: int = 64, case: GearMeshCase | None = Non
         metadata = json.loads((case_dir / "case.json").read_text(encoding="utf-8"))
         xx, yy = grid_window(metadata, grid_size)
         return element_material_mask(case_dir, xx, yy)
+
+
+# ---------------------------------------------------------------------------
+# Gear-mesh case with a filleted root and a deformable rim (added 2026-10-13).
+#
+# ``build_gear_mesh_case`` fixes every driver node on and below the root circle,
+# and the radial flank below the base circle meets the root circle at a sharp
+# corner. A clamped sharp corner makes the root stress singular, so it cannot
+# converge under mesh refinement. The builder below keeps the loading, contact,
+# material and solver controls of that model and changes the driver geometry
+# and support:
+#   * a circular fillet of radius ``fillet_radius_module`` * m, tangent to the
+#     radial flank and to the root circle, replaces the corner on both sides of
+#     every tooth (0.38 m is the fillet radius of the ISO 53 basic rack, profile A);
+#   * the driver is a sector of ``sector_teeth`` teeth on a rim that ends at the
+#     bore, ``rim_depth_module`` * m below the root circle; only the bore is fixed,
+#     so the rim deforms and the neighbouring teeth stiffen it;
+#   * the mesh size is ``mesh_size_mm`` inside the prediction window,
+#     ``contact_mesh_size_mm`` within ``contact_refine_radius_mm`` of the contact
+#     point and grows to ``outer_mesh_size_mm`` away from the window.
+# Only the loaded flank of the centre tooth belongs to the driver's contact
+# surface. The mating tooth keeps its single-sector form, with the same fillet,
+# and is loaded through its rim as in ``build_gear_mesh_case``. The driver's
+# support set keeps the name DRIVERROOT, so the reaction is read as before.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FilletGearMeshCase(GearMeshCase):
+    """``GearMeshCase`` with a filleted root and a deformable, multi-tooth rim."""
+
+    fillet_radius_module: float = 0.38
+    rim_depth_module: float = 3.0
+    sector_teeth: int = 3
+    outer_mesh_size_mm: float = 0.5
+    contact_mesh_size_mm: float = 0.03
+    contact_refine_radius_mm: float = 0.3
+    fillet_mesh_size_mm: float = 0.04
+    fillet_samples: int = 24
+
+    @property
+    def fillet_radius_mm(self) -> float:
+        return self.fillet_radius_module * self.module_mm
+
+    @property
+    def bore_radius_mm(self) -> float:
+        return self.root_radius_mm - self.rim_depth_module * self.module_mm
+
+
+def _fillet_arc(rr: float, rho: float, theta_b: float, side: int, n: int) -> np.ndarray:
+    """Circular fillet of radius ``rho`` tangent to the radial line at angle ``theta_b``
+    and to the root circle of radius ``rr``, on the tooth-space side (``side`` +1 for
+    the left flank, where the space lies at larger angles, -1 for the right flank).
+    Points run from the root-circle tangent point to the radial-line tangent point."""
+    d = math.asin(rho / (rr + rho))
+    tc = theta_b + side * d
+    centre = (rr + rho) * np.array((math.cos(tc), math.sin(tc)))
+    t_root = rr * np.array((math.cos(tc), math.sin(tc)))
+    t_line = (rr + rho) * math.cos(d) * np.array((math.cos(theta_b), math.sin(theta_b)))
+    a0 = math.atan2(t_root[1] - centre[1], t_root[0] - centre[0])
+    a1 = math.atan2(t_line[1] - centre[1], t_line[0] - centre[0])
+    da = (a1 - a0 + math.pi) % (2.0 * math.pi) - math.pi
+    angles = a0 + da * np.linspace(0.0, 1.0, n)
+    return centre + rho * np.column_stack((np.cos(angles), np.sin(angles)))
+
+
+def filleted_tooth_outline(case: FilletGearMeshCase, flank_samples: int,
+                           arc_samples: int = 24) -> tuple[np.ndarray, slice, tuple[slice, slice]]:
+    """Free outline of one tooth from the left to the right sector edge on the root
+    circle (left root arc, fillet, radial flank, involute, tip, and back down the
+    right side). Returns the points, the slice of the right involute flank and the
+    slices of the left and right fillets."""
+    left = conjugate_involute_flank(case, flank_samples)
+    right = left.copy()
+    right[:, 0] *= -1.0
+    rr, rho = case.root_radius_mm, case.fillet_radius_mm
+    sector = math.pi / case.teeth
+    t_left = math.atan2(left[0, 1], left[0, 0])
+    t_right = math.atan2(right[0, 1], right[0, 0])
+    d = math.asin(rho / (rr + rho))
+    if t_left + d >= math.pi / 2.0 + sector:
+        raise ValueError("fillet does not fit in the tooth space")
+    fillet_left = _fillet_arc(rr, rho, t_left, +1, case.fillet_samples)
+    fillet_right = _fillet_arc(rr, rho, t_right, -1, case.fillet_samples)[::-1]
+    a_left = np.linspace(math.pi / 2.0 + sector, t_left + d, 12)
+    a_right = np.linspace(t_right - d, math.pi / 2.0 - sector, 12)
+    root_left = rr * np.column_stack((np.cos(a_left), np.sin(a_left)))
+    root_right = rr * np.column_stack((np.cos(a_right), np.sin(a_right)))
+    tip_angles = np.linspace(math.atan2(left[-1, 1], left[-1, 0]), math.atan2(right[-1, 1], right[-1, 0]), arc_samples)
+    tip = case.outer_radius_mm * np.column_stack((np.cos(tip_angles), np.sin(tip_angles)))
+    pieces = [root_left[:-1], fillet_left, left, tip[1:-1], right[::-1], fillet_right, root_right[1:]]
+    offsets = np.cumsum([0] + [len(p) for p in pieces])
+    flank = slice(int(offsets[4]), int(offsets[5]))
+    fillets = (slice(int(offsets[1]), int(offsets[2])), slice(int(offsets[5]), int(offsets[6])))
+    return np.vstack(pieces), flank, fillets
+
+
+def filleted_sector_polygon(case: FilletGearMeshCase, teeth_in_sector: int, inner_radius_mm: float,
+                            flank_samples: int) -> tuple[np.ndarray, slice, list[slice]]:
+    """Closed polygon of ``teeth_in_sector`` filleted teeth (centre tooth on the +y
+    axis) on a rim down to ``inner_radius_mm``. Returns the points, the slice of the
+    centre tooth's right involute flank and the slices of its two fillets."""
+    outline, flank, fillets = filleted_tooth_outline(case, flank_samples)
+    pitch = 2.0 * math.pi / case.teeth
+    half = teeth_in_sector // 2
+    points: list[np.ndarray] = []
+    count, flank_slice, fillet_slices = 0, None, []
+    for j in range(teeth_in_sector):
+        seg = outline @ _rot((half - j) * pitch).T
+        skip = 1 if points else 0
+        if j == half:
+            shift = lambda sl: slice(count + sl.start - skip, count + sl.stop - skip)
+            flank_slice = shift(flank)
+            fillet_slices = [shift(sl) for sl in fillets]
+        points.append(seg[skip:])
+        count += len(seg) - skip
+    a_right = math.pi / 2.0 - math.pi / case.teeth - half * pitch
+    a_left = math.pi / 2.0 + math.pi / case.teeth + half * pitch
+    bore = np.linspace(a_right, a_left, max(24, 24 * teeth_in_sector))
+    points.append(inner_radius_mm * np.column_stack((np.cos(bore), np.sin(bore))))
+    return np.vstack(points), flank_slice, fillet_slices
+
+
+def build_fillet_gear_mesh_case(case: FilletGearMeshCase, output_dir: Path) -> Path:
+    """Mesh and write a tooth-pair case with a filleted root and a deformable rim.
+
+    Same contact kinematics, loading, material, contact law and step as
+    ``build_gear_mesh_case``; see the comment block above for what differs.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    a1 = gear_mesh_angle_for(case, case.line_of_action_mm)
+    rot0, centre0 = gear_mesh_pose(case, a1)
+    final = gear_mesh_contact_exact(case, case.line_of_action_mm)
+    point, normal, tangent = final["point"], final["normal"], final["tangent"]
+    h = 1e-5
+    rot_h, centre_h = gear_mesh_pose(case, a1 + h)
+    xi = rot_h.T @ (point - centre_h)
+    slip_rate = float(((rot0 @ xi + centre0) - point) @ tangent) / h
+    ramp = min(1.0, abs(case.line_of_action_mm) / case.slip_ramp_mm) if case.slip_ramp_mm > 0 else 1.0
+    slip = float(np.sign(slip_rate)) * case.slip_mm * ramp
+    approach_vec = -case.approach_mm * normal + slip * tangent
+    window = {**asdict(case)}
+    xx, yy = grid_window(window, 64)
+    gmsh.initialize()
+    try:
+        gmsh.option.setNumber("General.Terminal", 0)
+        gmsh.model.add("involute_gear_mesh_fillet_rim")
+        driver_polygon, flank, fillets = filleted_sector_polygon(case, case.sector_teeth, case.bore_radius_mm,
+                                                                 case.flank_samples)
+        mating_polygon, _, _ = filleted_sector_polygon(case, 1, case.root_radius_mm - 0.75 * case.module_mm,
+                                                       case.flank_samples)
+        mating_polygon = mating_polygon @ rot0.T + centre0
+
+        def add_polygon(points: np.ndarray) -> tuple[int, list[int], list[int]]:
+            point_tags = [gmsh.model.occ.addPoint(float(x), float(y), 0.0) for x, y in points]
+            curve_tags = [
+                gmsh.model.occ.addLine(point_tags[i], point_tags[(i + 1) % len(point_tags)])
+                for i in range(len(point_tags))
+            ]
+            loop = gmsh.model.occ.addCurveLoop(curve_tags)
+            return gmsh.model.occ.addPlaneSurface([loop]), point_tags, curve_tags
+
+        driver_surface, _, driver_curves = add_polygon(driver_polygon)
+        mating_surface, _, mating_curves = add_polygon(mating_polygon)
+        gmsh.model.occ.synchronize()
+        # background size: the production size inside the prediction window, finer
+        # around the contact point, coarser away from the window
+        margin = 0.3
+        f_window = gmsh.model.mesh.field.add("Box")
+        for key, value in (("VIn", case.mesh_size_mm), ("VOut", case.outer_mesh_size_mm),
+                           ("XMin", float(xx.min()) - margin), ("XMax", float(xx.max()) + margin),
+                           ("YMin", float(yy.min()) - margin), ("YMax", float(yy.max()) + margin),
+                           ("Thickness", 1.5)):
+            gmsh.model.mesh.field.setNumber(f_window, key, value)
+        r_c = case.contact_refine_radius_mm
+        f_contact = gmsh.model.mesh.field.add("Box")
+        for key, value in (("VIn", case.contact_mesh_size_mm), ("VOut", case.outer_mesh_size_mm),
+                           ("XMin", float(point[0]) - r_c), ("XMax", float(point[0]) + r_c),
+                           ("YMin", float(point[1]) - r_c), ("YMax", float(point[1]) + r_c),
+                           ("Thickness", 1.5)):
+            gmsh.model.mesh.field.setNumber(f_contact, key, value)
+        # finer along both fillets of the centre tooth, where the root peak lies
+        f_dist = gmsh.model.mesh.field.add("Distance")
+        gmsh.model.mesh.field.setNumbers(f_dist, "CurvesList",
+                                         [driver_curves[i] for sl in fillets for i in range(sl.start, sl.stop - 1)])
+        gmsh.model.mesh.field.setNumber(f_dist, "Sampling", 20)
+        f_fillet = gmsh.model.mesh.field.add("Threshold")
+        for key, value in (("InField", f_dist), ("SizeMin", case.fillet_mesh_size_mm),
+                           ("SizeMax", case.outer_mesh_size_mm), ("DistMin", 0.1), ("DistMax", 1.5)):
+            gmsh.model.mesh.field.setNumber(f_fillet, key, value)
+        f_min = gmsh.model.mesh.field.add("Min")
+        gmsh.model.mesh.field.setNumbers(f_min, "FieldsList", [f_window, f_contact, f_fillet])
+        gmsh.model.mesh.field.setAsBackgroundMesh(f_min)
+        gmsh.option.setNumber("Mesh.MeshSizeExtendFromBoundary", 0)
+        gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 0)
+        gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
+        gmsh.option.setNumber("Mesh.MeshSizeMin", 0.5 * min(case.contact_mesh_size_mm, case.fillet_mesh_size_mm))
+        gmsh.option.setNumber("Mesh.MeshSizeMax", case.outer_mesh_size_mm)
+        gmsh.option.setNumber("Mesh.ElementOrder", 1)
+        gmsh.model.mesh.generate(2)
+
+        node_tags, coordinates, _ = gmsh.model.mesh.getNodes()
+        coordinates = np.asarray(coordinates).reshape(-1, 3)
+        nodes = {int(tag): coord for tag, coord in zip(node_tags, coordinates)}
+        element_sets: dict[str, dict[int, np.ndarray]] = {}
+        for name, area in (("DRIVER", driver_surface), ("MATING", mating_surface)):
+            types, tag_blocks, node_blocks = gmsh.model.mesh.getElements(2, area)
+            elements: dict[int, np.ndarray] = {}
+            for element_type, tags, flat_nodes in zip(types, tag_blocks, node_blocks):
+                _, _, _, nodes_per_element, _, _ = gmsh.model.mesh.getElementProperties(element_type)
+                if nodes_per_element != 3:
+                    continue
+                shaped = np.asarray(flat_nodes, dtype=np.int64).reshape(-1, 3)
+                for row in shaped:
+                    a, b, c = (nodes[int(tag)][:2] for tag in row)
+                    if (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) < 0:
+                        row[1], row[2] = row[2], row[1]
+                elements.update({int(tag): row for tag, row in zip(tags, shaped)})
+            if not elements:
+                raise RuntimeError(f"no linear triangles generated for {name}")
+            element_sets[name] = elements
+
+        all_elements = {**element_sets["DRIVER"], **element_sets["MATING"]}
+        driver_faces = _surface_edges(all_elements, driver_curves[flank.start:flank.stop - 1])
+        mating_faces = _surface_edges(all_elements, mating_curves)
+        if not driver_faces or not mating_faces:
+            raise RuntimeError("failed to map contact surfaces")
+        driver_node_ids = sorted({int(v) for row in element_sets["DRIVER"].values() for v in row})
+        mating_node_ids = sorted({int(v) for row in element_sets["MATING"].values() for v in row})
+        used = set(driver_node_ids) | set(mating_node_ids)
+        nodes = {tag: xyz for tag, xyz in nodes.items() if tag in used}
+        driver_root = [t for t in driver_node_ids if np.linalg.norm(nodes[t][:2]) <= case.bore_radius_mm + 0.02]
+        root_limit = case.root_radius_mm + case.mesh_size_mm * 0.45
+        mating_root = [t for t in mating_node_ids if np.linalg.norm(rot0.T @ (nodes[t][:2] - centre0)) <= root_limit]
+        if len(driver_root) < 3 or len(mating_root) < 3:
+            raise RuntimeError("gear-sector support set is unexpectedly small")
+
+        def ids_block(values: list[int]) -> str:
+            return "\n".join(", ".join(map(str, values[i : i + 16])) for i in range(0, len(values), 16))
+
+        mating_bc = []
+        for t in mating_root:
+            mating_bc += [f"{t}, 1, 1, {approach_vec[0]:.12g}", f"{t}, 2, 2, {approach_vec[1]:.12g}"]
+
+        lines = ["*HEADING", "Involute tooth-pair contact, filleted root and deformable rim, kinematically consistent loading"]
+        lines.append("*NODE")
+        lines.extend(f"{tag}, {xyz[0]:.10g}, {xyz[1]:.10g}, {xyz[2]:.10g}" for tag, xyz in sorted(nodes.items()))
+        for name, elements in element_sets.items():
+            lines.append(f"*ELEMENT, TYPE=CPE3, ELSET={name}")
+            lines.extend(f"{tag}, " + ", ".join(map(str, row)) for tag, row in sorted(elements.items()))
+        lines.extend(("*NSET, NSET=DRIVERROOT", ids_block(driver_root)))
+        lines.extend(("*NSET, NSET=MATINGROOT", ids_block(mating_root)))
+        lines.extend(("*NSET, NSET=DRIVERNODES", ids_block(driver_node_ids)))
+        lines.extend(("*NSET, NSET=MATINGNODES", ids_block(mating_node_ids)))
+        lines.append("*SURFACE, NAME=DRIVERSURF, TYPE=ELEMENT")
+        lines.extend(f"{element}, {face}" for element, face in driver_faces)
+        lines.append("*SURFACE, NAME=MATINGSURF, TYPE=ELEMENT")
+        lines.extend(f"{element}, {face}" for element, face in mating_faces)
+        lines.extend(
+            (
+                "*MATERIAL, NAME=STEEL",
+                "*ELASTIC",
+                f"{case.youngs_modulus_mpa:.10g}, {case.poisson_ratio:.10g}",
+                "*SOLID SECTION, ELSET=DRIVER, MATERIAL=STEEL",
+                "*SOLID SECTION, ELSET=MATING, MATERIAL=STEEL",
+                "*SURFACE INTERACTION, NAME=CONTACTINT",
+                "*SURFACE BEHAVIOR, PRESSURE-OVERCLOSURE=LINEAR",
+                f"{case.contact_penalty_factor * case.youngs_modulus_mpa:.10g}",
+                "*FRICTION",
+                f"{case.friction:.10g}, {0.5 * case.youngs_modulus_mpa:.10g}",
+                "*CONTACT PAIR, INTERACTION=CONTACTINT, TYPE=SURFACE TO SURFACE",
+                "MATINGSURF, DRIVERSURF",
+                "*BOUNDARY",
+                "DRIVERROOT, 1, 2, 0.0",
+                "*STEP, NLGEOM",
+                "*STATIC",
+                "0.025, 1.0, 1e-07, 0.1",
+                "*BOUNDARY",
+                *mating_bc,
+                "*NODE FILE",
+                "U, RF",
+                "*EL FILE",
+                "S, E",
+                "*CONTACT FILE",
+                "CDIS, CSTR, CELS",
+                "*END STEP",
+            )
+        )
+        deck = output_dir / "case.inp"
+        deck.write_text("\n".join(lines) + "\n", encoding="ascii")
+        metadata = {
+            **asdict(case),
+            "model": "involute_tooth_pair_fillet_rim_kinematic_loading",
+            "fillet_radius_mm": case.fillet_radius_mm,
+            "bore_radius_mm": case.bore_radius_mm,
+            "contact_point_mm": point.tolist(),
+            "contact_normal": normal.tolist(),
+            "contact_tangent": final["tangent"].tolist(),
+            "contact_radius_mm": final["radius_mm"],
+            "driver_angle_rad": a1,
+            "slip_per_rolling_angle_mm": slip_rate,
+            "imposed_slip_toward_tip_mm": slip,
+            "approach_vector_mm": approach_vec.tolist(),
+            "mating_rotation": rot0.tolist(),
+            "mating_center_mm": centre0.tolist(),
+            "nodes": len(nodes),
+            "elements": len(all_elements),
+            "driver_elements": len(element_sets["DRIVER"]),
+            "driver_root_nodes": len(driver_root),
+            "mating_root_nodes": len(mating_root),
+            "driver_contact_faces": len(driver_faces),
+        }
+        (output_dir / "case.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+        driver_element_ids = np.asarray(sorted(element_sets["DRIVER"]), dtype=np.int64)
+        np.savez_compressed(
+            output_dir / "mesh_data.npz",
+            node_ids=np.asarray(sorted(nodes), dtype=np.int64),
+            coordinates=np.stack([nodes[tag] for tag in sorted(nodes)]),
+            tooth_node_ids=np.asarray(driver_node_ids, dtype=np.int64),
+            driver_node_ids=np.asarray(driver_node_ids, dtype=np.int64),
+            mating_node_ids=np.asarray(mating_node_ids, dtype=np.int64),
+            driver_element_ids=driver_element_ids,
+            driver_connectivity=np.stack([element_sets["DRIVER"][int(tag)] for tag in driver_element_ids]),
+            mating_rotation=rot0,
+            mating_center=centre0,
+        )
+        gmsh.write(str(output_dir / "case.msh"))
+        return deck
+    finally:
+        gmsh.finalize()
+
+
+def fillet_gear_mesh_material_mask(grid_size: int = 64, case: FilletGearMeshCase | None = None) -> np.ndarray:
+    """Material mask of the filleted driver (three teeth and rim) on the prediction grid."""
+    import tempfile
+
+    case = case or FilletGearMeshCase()
+    with tempfile.TemporaryDirectory(prefix="gm_fillet_mask_") as work:
+        case_dir = Path(work) / "case"
+        build_fillet_gear_mesh_case(case, case_dir)
+        metadata = json.loads((case_dir / "case.json").read_text(encoding="utf-8"))
+        xx, yy = grid_window(metadata, grid_size)
+        return element_material_mask(case_dir, xx, yy)

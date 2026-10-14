@@ -5,6 +5,34 @@ of the in-plane stress field in a spur-gear tooth under quasi-static frictional
 contact: a ten-member Fourier Neural Operator ensemble trained on nonlinear
 contact solutions from CalculiX and evaluated on held-out loading trajectories.
 
+## Version 3.2.0: filleted root and deformable rim
+
+- **Second finite-element model** (`fem.FilletGearMeshCase`,
+  `fem.build_fillet_gear_mesh_case`; the v4 builder is unchanged). Each tooth has a
+  circular root fillet of radius 0.38 modules (the fillet radius of the ISO 53 basic
+  rack, profile A), tangent to the radial flank and the root circle. The driving gear
+  is a three-tooth sector on a rim 3 modules deep, fixed only at its bore, so the rim
+  deforms. Elements measure 0.12 mm in the prediction window, 0.04 mm along the
+  fillets of the loaded tooth, 0.03 mm in a 0.6 mm square around the contact point
+  and 0.5 mm away from the window. Kinematics, loading, material, contact and solver
+  controls are those of v4.
+- **Datasets v5 and v5f** (`generate_fillet_rim_dataset.py`): the 432 cases of v4f
+  solved with the second model at the same approach, friction coefficient, modulus
+  and contact position (normal loads 52 to 247 N/mm, against 75 to 354 N/mm in v4f),
+  and the 27 test cases solved again with every length scale refined 1.5-fold and
+  2-fold, with the root peak on 64, 128 and 256 grids.
+- **Convergence.** The labels differ from the 1.5-fold and 2-fold refinements by
+  0.0188 and 0.0242 (v4f: 0.0556 and 0.0741), and the difference between successive
+  levels falls at an observed order of 1.3 (1.2 in the tooth body). The largest nodal
+  root stress lies within 2.3% of its 2-fold value in every test case; on a
+  256 x 256 grid the root peak of the labels lies 1.7% below that of the 2-fold
+  refinement (sharp root of v4f: 17.0%).
+- **Surrogate** (`run_fillet_rim_training.py`, `analyze_fillet_rim.py`): ten FNOs
+  trained on v5f with the headline protocol and partition. The ensemble reproduces
+  the labels to 0.0089 and the 2-fold refinement to 0.0243 (0.0091 in the tooth
+  body), the root peak to 0.67%, and the sign of the friction effect on the root
+  peak in 27 of 27 cases.
+
 ## Version 3.1.0: material mask, robustness checks and matched baselines
 
 - **Material mask.** The grid mask of the gear-mesh datasets was the convex hull
@@ -88,6 +116,9 @@ The committed outputs are under `outputs/surrogate/`.
 | Ensemble on six additional trajectories (unseen positions and approaches) | relative L2 = 0.0195 | same |
 | Labels against references with every length scale refined 1.5-fold and 2-fold | relative L2 = 0.0556 and 0.0741 | `analyze_gear_mesh_surrogate.py` |
 | Peak root tensile stress (max. principal), surrogate against labels | 0.5% mean absolute error | same |
+| Second model (filleted root, deformable rim): labels against 1.5-fold and 2-fold refinements | relative L2 = 0.0188 and 0.0242 | `analyze_fillet_rim.py` |
+| Second model: ensemble trained on v5f, against labels and against the 2-fold refinement | relative L2 = 0.0089 and 0.0243 (tooth body 0.0091) | same |
+| Second model: peak root tensile stress, surrogate against labels | 0.67% mean absolute error | same |
 | Friction response, mu = 0.04 to 0.12 | FE field changes 8.7%, surrogate 8.7%; sign of the root-stress change correct in 27 of 27 cases | same |
 | Contact: FE peak pressure against Hertz line contact, all 432 cases | 0.98 to 1.09 | same |
 | Contact: resultant tangential force / (mu x normal force), sliding cases | 0.96 to 1.00 | same |
@@ -148,6 +179,17 @@ uv run python scripts/analyze_extended_study.py         # needs the checkpoints 
 ```
 Figures are written to `outputs/figures/`.
 
+The second model of version 3.2.0:
+
+```bash
+uv run python scripts/analyze_fillet_rim.py               # from the shipped solutions and checkpoints
+uv run python scripts/generate_extended_figures.py fillet
+uv run python scripts/generate_fillet_rim_dataset.py --workers 4 --refined-workers 2   # the 486 solves (CalculiX, resumable)
+uv run python scripts/generate_fillet_rim_dataset.py --assemble                        # v5 and v5f from the solves
+uv run python scripts/run_fillet_rim_training.py --workers 10                         # the ten networks on v5f
+```
+The 2-fold refined solves need about 3.6 GB of memory each.
+
 The finite-element steps need [CalculiX](http://www.calculix.de/) (pass its
 path with `--ccx` or put `ccx` on your PATH); Gmsh comes in through the Python
 dependencies.
@@ -193,7 +235,7 @@ skips cleanly without it.
 | Path | Contents |
 |---|---|
 | `src/gearstress/` | The package: finite-element case building and CalculiX I/O (`fem.py`, including the corrected `GearMeshCase`; `plate_hole_fem.py`), models (`models.py`), physics losses (`losses.py`), the alternative architectural mechanisms (`inventions.py`), active-learning acquisition (`active_learning.py`), leakage-safe splitting (`splits.py`), and an analytic debug proxy (`proxy.py`). |
-| `scripts/` | All 67 dataset-generation, training, study, analysis and figure entry points. Each module docstring states what it does. |
+| `scripts/` | All 70 dataset-generation, training, study, analysis and figure entry points. Each module docstring states what it does. |
 | `tests/` | Unit and shape tests for the pipeline and the active-learning code. |
 | `configs/` | Experiment settings. |
 | `data/processed/` | Model-ready HDF5 datasets. |
@@ -205,6 +247,8 @@ skips cleanly without it.
 |---|---|
 | `gear_mesh_quasistatic_v4.h5` | Corrected model: 144 cases, 16 trajectories x 9 contact positions in the single-tooth contact zone. |
 | `gear_mesh_quasistatic_v4f.h5` | v4 plus every case re-solved at mu = 0.04 and 0.12 (432 cases, same partition). The surrogate is trained on it. |
+| `gear_mesh_quasistatic_v5.h5` | Second model (filleted root, deformable rim): the 144 cases of v4 solved again. |
+| `gear_mesh_quasistatic_v5f.h5` | Second model: the 432 cases of v4f solved again (same partition). |
 | `gear_mesh_quasistatic_v4_extra.h5` | Six additional test trajectories (54 cases) with contact positions between the nine of v4 and an approach drawn at every position; test only. |
 | `gear_pair_transient_quasistatic_v1.h5`, `_v2.h5`, `_v3.h5` | Earlier model: 63, 144 and 63 cases, used for the method comparisons. |
 | `gear_pair_geometry_v1.h5` | Earlier model, 120 cases with varied pressure angle and root clearance. |
@@ -215,7 +259,7 @@ skips cleanly without it.
 Every file holds `inputs` (8 x 64 x 64), `targets` (sigma_xx, sigma_yy, sigma_xy
 on a 64 x 64 grid) and `conditions`. The gear datasets also hold
 `trajectory_ids`, which the split groups on. The gear-mesh files name their
-condition columns in the file attributes, and v4f adds `friction_variant`.
+condition columns in the file attributes, and v4f and v5f add `friction_variant`.
 
 ## Outputs (`outputs/`)
 
@@ -225,6 +269,10 @@ condition columns in the file attributes, and v4f adds `friction_variant`.
 | `outputs/surrogate/gear_mesh_solve_time_idle.json`, `inference_benchmark.json`, `training_cost*.json` | Solver time, network timing, training time |
 | `outputs/gear_mesh_v4_dataset/` | Every gear-mesh solve on the prediction grid with its contact metrics: production cases (`base_*`), 0.08 mm elements (`fine_*`) and 0.08 mm elements with a 120-vertex flank (`fineflank_*`) |
 | `outputs/smoke/gear_mesh_quasistatic_v4/`, `..._v4f/` | The 20 headline gear-mesh networks (checkpoints and per-seed logs), and the per-seed logs of every run of the partitions, the screening and the matched comparison |
+| `outputs/fillet_rim_dataset/` | Every solve of the second model on the prediction grid with its contact and root metrics: production cases (`L1_*`) and the refined test cases (`L2_*`, 1.5-fold; `L3_*`, 2-fold) |
+| `outputs/fillet_rim/` | `fillet_rim_results.json` (convergence, root peak, contact and surrogate results of the second model) and `fillet_case_fields.npz` (fields of the figure case) |
+| `outputs/surrogate/gear_mesh_v5_contact.json` | Contact metrics of every solve of the second model |
+| `outputs/smoke/gear_mesh_quasistatic_v5f/` | The ten networks trained on v5f (checkpoints and per-seed logs) |
 | `outputs/extended_study/` | `extended_results.json` (partitions, additional trajectories, matched comparison, POD, error against distance from the contact), `model_selection.json` (screening), `earlier_variants.json` (earlier comparisons under both metrics), `fe_summary.json` and `fe/` (finite-element checks: contact status and solutions at three discretizations) |
 | `outputs/surrogate/gear_mesh_v4_results_hullmask.json` | Results of version 3.0.0 (convex-hull mask) |
 | `outputs/surrogate/contact_load_path*`, `refined_flank_test/`, `hertz_contact_check.json` | Diagnosis of the earlier model's load path |

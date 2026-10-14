@@ -1,4 +1,4 @@
-"""Figures of the robustness and comparison analyses (release 3.1.0), drawn from the result files only.
+"""Figures of the robustness, comparison and filleted-root analyses (releases 3.1.0 and 3.2.0), drawn from the result files only.
 
 fig_robustness  (a) ensemble error of each test trajectory in every partition in
                 which it is tested; (b) error of each case of the six additional
@@ -15,7 +15,11 @@ figS_contact    nodal contact pressure along the flank at three positions and
 Every plotted statistic that is also reported in a table is asserted against the
 reported value before the figure is saved.
 
-Usage: python scripts/generate_extended_figures.py [robustness] [comparison] [variants] [contact]
+fig_fillet      filleted-root, deformable-rim model (release 3.2.0): label, ensemble prediction and
+                their difference for one test case, and the root peak under refinement of both models on
+                a 256 x 256 output grid
+
+Usage: python scripts/generate_extended_figures.py [robustness] [comparison] [variants] [contact] [fillet]
 Output: outputs/figures/ (600 dpi PNG)
 """
 from __future__ import annotations
@@ -211,7 +215,56 @@ def figS_contact() -> None:
     save(fig, "figS_contact")
 
 
+
+def fig_fillet() -> None:
+    """(a)-(c) maximum principal stress of one test case of the filleted-root, deformable-rim model: label,
+    ensemble prediction and their difference; (d) change of the root peak with refinement for the main model and
+    the filleted model, relative to the 2-fold refinement."""
+    res = json.loads((ROOT / "outputs" / "fillet_rim" / "fillet_rim_results.json").read_text(encoding="utf-8"))
+    f = np.load(ROOT / "outputs" / "fillet_rim" / "fillet_case_fields.npz")
+    s1 = lambda s: 0.5 * (s[0] + s[1]) + np.sqrt(0.25 * (s[0] - s[1]) ** 2 + s[2] ** 2)
+    m = f["mask"] > 0.5
+    lab, ens = np.where(m, s1(f["label"]), np.nan), np.where(m, s1(f["ensemble"]), np.nan)
+    ext = (float(f["x"].min()), float(f["x"].max()), float(f["y"].min()), float(f["y"].max()))
+    fig = plt.figure(figsize=(8.4, 3.0))
+    gs = fig.add_gridspec(1, 4, width_ratios=[1, 1, 1, 1], wspace=0.5)
+    lim = float(np.ceil(np.nanmax(np.abs(lab)) / 10) * 10)              # field scale from the label's largest |σ1|
+    dlim = float(np.ceil(2 * np.nanmax(np.abs(ens - lab))) / 2)          # difference scale, in steps of 0.5 MPa
+    for k, (title, v, cmap, vmax) in enumerate((("(a) label", lab, "RdBu_r", lim), ("(b) ensemble", ens, "RdBu_r", lim),
+                                                ("(c) ensemble − label", ens - lab, "PuOr_r", dlim))):
+        ax = fig.add_subplot(gs[0, k])
+        im = ax.imshow(v, origin="lower", extent=ext, cmap=cmap, vmin=-vmax, vmax=vmax)
+        ax.set_title(title, fontsize=9)
+        ax.set_xlabel("x (mm)", fontsize=8)
+        if k == 0:
+            ax.set_ylabel("y (mm)", fontsize=8)
+        ax.tick_params(labelsize=7)
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.06, pad=0.22)
+        cb.ax.tick_params(labelsize=7)
+        cb.set_label("σ₁ (MPa)", fontsize=7)
+    ax = fig.add_subplot(gs[0, 3])
+    # root peak after projection onto the 256 x 256 grid, relative to the 2-fold refinement
+    g4 = json.loads((EXT_DIR / "fe_summary.json").read_text(encoding="utf-8"))["grid_sensitivity"]["labels_vs_refined_grid256"]
+    g5 = res["convergence"]["grid_sensitivity"]["labels_vs_refined_grid256"]
+    sharp = [100 * g4["L1_vs_L3"]["mean"], 100 * g4["L2_vs_L3"]["mean"]]
+    fil = [100 * g5["L1_vs_L3"]["mean"], 100 * g5["L2_vs_L3"]["mean"]]
+    close(fil[0] / 100, g5["L1_vs_L3"]["mean"], "filleted root peak L1-L3, 256 grid")
+    close(sharp[0] / 100, g4["L1_vs_L3"]["mean"], "sharp root peak L1-L3, 256 grid")
+    xs = np.arange(2)
+    ax.bar(xs - 0.18, sharp, 0.34, color=GREY, label="sharp root, clamped rim")
+    ax.bar(xs + 0.18, fil, 0.34, color=BLUE, label="filleted root, deformable rim")
+    ax.axhline(0, color="#333333", lw=0.6)
+    ax.set_xticks(xs, ["production", "1.5-fold"], fontsize=8)
+    ax.set_ylabel("difference from 2-fold (%)", fontsize=8)
+    ax.set_title("(d) root peak, 256 × 256 grid", fontsize=9)
+    ax.tick_params(labelsize=7)
+    ax.set_box_aspect(1.0)
+    ax.legend(fontsize=7, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=1)
+    save(fig, "fig_fillet")
+
+
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["robustness", "comparison", "variants", "contact"]
+    which = sys.argv[1:] or ["robustness", "comparison", "variants", "contact", "fillet"]
     for w in which:
-        {"robustness": fig_robustness, "comparison": fig_comparison, "variants": figS_variants, "contact": figS_contact}[w]()
+        {"robustness": fig_robustness, "comparison": fig_comparison, "variants": figS_variants, "contact": figS_contact,
+         "fillet": fig_fillet}[w]()
